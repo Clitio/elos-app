@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { signOut } from 'firebase/auth'
 import { doc, getDoc } from 'firebase/firestore'
 import { auth, db } from '../firebase'
+import defaultAvatar from '../assets/defaultAvatar'
 
 const DashboardPage = () => {
   const navigate = useNavigate()
@@ -63,9 +64,9 @@ const DashboardPage = () => {
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-8 mb-6">
         <div className="flex items-center gap-6 mb-6">
           <img
-            src={userData?.photo || 'https://via.placeholder.com/80'}
-            alt={userData?.name}
-            className="w-24 h-24 rounded-full border-2 border-green-400"
+          src={userData?.photo || auth.currentUser?.photoURL || defaultAvatar}
+          alt={userData?.name}
+          className="w-24 h-24 rounded-full border-2 border-green-400 object-cover"
           />
           <div>
             <h2 className="text-2xl font-bold text-gray-800">{userData?.name}</h2>
