@@ -25,10 +25,10 @@ const PhotoUpload = ({ currentPhoto, onUploadComplete }) => {
       const formData = new FormData()
       formData.append('file', file)
       formData.append('upload_preset', 'elos_profiles')
-      formData.append('cloud_name', 'dm0nd0r1a')
+      formData.append('cloud_name', import.meta.env.VITE_CLOUDINARY_CLOUD_NAME)
 
       const response = await fetch(
-        'https://api.cloudinary.com/v1_1/dm0nd0r1a/image/upload',
+        `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`,
         {
           method: 'POST',
           body: formData,

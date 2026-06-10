@@ -1,0 +1,11 @@
+[33mcommit d2372127c9afbefdb9abedff748f19f45fbb52f2[m
+Author: Thiago Barbosa <@thiago.dasilvabarbosa>
+Date:   Wed Jun 10 23:32:05 2026 +0100
+
+    remove .env do tracking
+
+[33mcommit 37b8d793dca08b01950784249df638ace28f126c[m
+Author: Thiago Barbosa <@thiago.dasilvabarbosa>
+Date:   Wed Jun 10 23:30:48 2026 +0100
+
+    Firs commit for the Elos-app
