@@ -9,6 +9,16 @@ const LoginPage = () => {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
 
+  useEffect(() => {
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handleEmailLogin()
+    }
+  }
+  document.addEventListener('keydown', handleKeyDown)
+  return () => document.removeEventListener('keydown', handleKeyDown)
+}, [email, password])
+
   const handleGoogleLogin = async () => {
     try {
       await signInWithPopup(auth, googleProvider)

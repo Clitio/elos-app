@@ -28,6 +28,16 @@ const EditProfilePage = () => {
   const [openingHours, setOpeningHours] = useState({})
 
   useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Enter') {
+        handleSave()
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [area, location, languages, description, yearsInIreland, category, establishmentName, establishmentType, address, openingHours, userName, userPhoto])
+
+  useEffect(() => {
     const fetchData = async () => {
       const user = auth.currentUser
       if (!user) return

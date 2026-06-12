@@ -14,6 +14,17 @@ const TalkToUsPage = () => {
   const [userData, setUserData] = useState(null)
   const [loading, setLoading] = useState(true)
 
+  // ADICIONA AQUI
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Enter') {
+        handleSubmit()
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [message, type])
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (!currentUser) {

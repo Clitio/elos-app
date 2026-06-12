@@ -31,6 +31,20 @@ const RegisterPage = () => {
   const [openingHours, setOpeningHours] = useState({})
   const [error, setError] = useState('')
 
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Enter') {
+        if (step === 1) {
+          handleEmailRegister()
+        } else if (step === 2) {
+          handleCompleteProfile()
+        }
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [step, name, email, password, confirmPassword, area, location, languages, description, yearsInIreland, establishmentName, establishmentType, address, openingHours])
+
   const formatName = (value) => {
     const exceptions = ['da', 'de', 'do', 'das', 'dos', 'des', 'e']
     return value
