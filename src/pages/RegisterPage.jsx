@@ -6,12 +6,14 @@ import { auth, db, googleProvider } from '../firebase'
 import PhotoUpload from '../components/PhotoUpload'
 import LanguageSelector from '../components/LanguageSelector'
 import { containsBadWord } from '../utils/badWords'
+import { useLanguage } from '../context/LanguageContext'
 
 const days = ['Segunda', 'Terca', 'Quarta', 'Quinta', 'Sexta', 'Sabado', 'Domingo']
 const timeSlots = ['fechado', '08:00-17:00', '09:00-18:00', '10:00-19:00', '10:00-22:00', '12:00-22:00', '00:00-00:00']
 
 const RegisterPage = () => {
   const navigate = useNavigate()
+  const { t } = useLanguage()
   const [step, setStep] = useState(1)
   const [accountType, setAccountType] = useState('user')
   const [name, setName] = useState('')
@@ -199,7 +201,7 @@ const RegisterPage = () => {
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 w-full max-w-md">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-green-600">Elos</h1>
-            <p className="text-gray-500 mt-2">Completa o teu perfil profissional</p>
+            <p className="text-gray-500 mt-2">{t('completeProfile')}</p>
           </div>
           {error && <p className="text-red-500 text-sm text-center mb-4">{error}</p>}
           <div className="flex flex-col gap-4">
@@ -207,7 +209,7 @@ const RegisterPage = () => {
               <PhotoUpload currentPhoto={null} onUploadComplete={(url) => setPhoto(url)} />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">Area de trabalho</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">{t('workArea')}</label>
               <input
                 type="text"
                 value={area}
@@ -217,34 +219,34 @@ const RegisterPage = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">Localizacao em Cork</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">{t('locationInCork')}</label>
               <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Ex: Cork City Centre, Douglas" className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-400" />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Idiomas que falas</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">{t('languagesYouSpeak')}</label>
               <LanguageSelector selected={languages} onChange={setLanguages} />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">Anos na Irlanda</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">{t('yearsInIreland')}</label>
               <input type="number" value={yearsInIreland} onChange={(e) => setYearsInIreland(e.target.value)} placeholder="Ex: 2" min={0} className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-400" />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">Categoria</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">{t('category')}</label>
               <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-400">
-                <option value="health">Saude</option>
-                <option value="food">Alimentacao</option>
-                <option value="transport">Transporte</option>
-                <option value="beauty">Beleza</option>
-                <option value="community">Comunidade</option>
-                <option value="accommodation">Acomodacao</option>
-                <option value="daily">Dia a Dia</option>
+                <option value="health">{t('health')}</option>
+                <option value="food">{t('food')}</option>
+                <option value="transport">{t('transport')}</option>
+                <option value="beauty">{t('beauty')}</option>
+                <option value="community">{t('community')}</option>
+                <option value="accommodation">{t('accommodation')}</option>
+                <option value="daily">{t('dailyBasis')}</option>
               </select>
             </div>
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">Descricao</label>
-              <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Conta um pouco sobre ti e como podes ajudar..." rows={4} className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-400" />
+              <label className="block text-sm font-semibold text-gray-700 mb-1">{t('description')}</label>
+              <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="..." rows={4} className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-400" />
             </div>
-            <button onClick={handleCompleteProfile} className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition mt-2">Completar Perfil</button>
+            <button onClick={handleCompleteProfile} className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition mt-2">{t('completeProfileButton')}</button>
           </div>
         </div>
       </div>
@@ -257,7 +259,7 @@ const RegisterPage = () => {
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 w-full max-w-md">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-green-600">Elos</h1>
-            <p className="text-gray-500 mt-2">Regista o teu estabelecimento</p>
+            <p className="text-gray-500 mt-2">{t('registerEstablishment')}</p>
           </div>
           {error && <p className="text-red-500 text-sm text-center mb-4">{error}</p>}
           <div className="flex flex-col gap-4">
@@ -265,11 +267,11 @@ const RegisterPage = () => {
               <PhotoUpload currentPhoto={null} onUploadComplete={(url) => setPhoto(url)} />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">Nome do estabelecimento</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">{t('establishmentName')}</label>
               <input type="text" value={establishmentName} onChange={(e) => setEstablishmentName(e.target.value)} placeholder="Ex: Restaurante Sabor Brasil" className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-400" />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">Tipo de negocio</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">{t('businessType')}</label>
               <input
                 type="text"
                 value={establishmentType}
@@ -279,11 +281,11 @@ const RegisterPage = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">Morada</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">{t('address')}</label>
               <input type="text" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Ex: 123 Patrick Street, Cork" className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-400" />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Horarios de funcionamento</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">{t('openingHours')}</label>
               <div className="flex flex-col gap-2">
                 {days.map((day) => (
                   <div key={day} className="flex items-center gap-2">
@@ -301,26 +303,26 @@ const RegisterPage = () => {
               </div>
             </div>
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Idiomas falados no estabelecimento</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">{t('languagesSpoken')}</label>
               <LanguageSelector selected={languages} onChange={setLanguages} />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">Categoria</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">{t('category')}</label>
               <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-400">
-                <option value="health">Saude</option>
-                <option value="food">Alimentacao</option>
-                <option value="transport">Transporte</option>
-                <option value="beauty">Beleza</option>
-                <option value="community">Comunidade</option>
-                <option value="accommodation">Acomodacao</option>
-                <option value="daily">Dia a Dia</option>
+                <option value="health">{t('health')}</option>
+                <option value="food">{t('food')}</option>
+                <option value="transport">{t('transport')}</option>
+                <option value="beauty">{t('beauty')}</option>
+                <option value="community">{t('community')}</option>
+                <option value="accommodation">{t('accommodation')}</option>
+                <option value="daily">{t('dailyBasis')}</option>
               </select>
             </div>
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">Descricao</label>
-              <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Descreve o teu estabelecimento..." rows={4} className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-400" />
+              <label className="block text-sm font-semibold text-gray-700 mb-1">{t('description')}</label>
+              <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="..." rows={4} className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-400" />
             </div>
-            <button onClick={handleCompleteProfile} className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition mt-2">Registar Estabelecimento</button>
+            <button onClick={handleCompleteProfile} className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition mt-2">{t('registerEstablishmentButton')}</button>
           </div>
         </div>
       </div>
@@ -332,53 +334,47 @@ const RegisterPage = () => {
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 w-full max-w-md">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-green-600">Elos</h1>
-          <p className="text-gray-500 mt-2">Cria a tua conta</p>
+          <p className="text-gray-500 mt-2">{t('registerTitle')}</p>
         </div>
         {error && <p className="text-red-500 text-sm text-center mb-4">{error}</p>}
         <div className="flex flex-col gap-4">
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Tipo de conta</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">{t('accountType')}</label>
             <select value={accountType} onChange={(e) => setAccountType(e.target.value)} className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-400">
-              <option value="user">Utilizador — Procuro servicos</option>
-              <option value="professional">Profissional — Ofeco um servico pessoal</option>
-              <option value="establishment">Estabelecimento — Tenho um negocio</option>
+              <option value="user">{t('userType')}</option>
+              <option value="professional">{t('professionalType')}</option>
+              <option value="establishment">{t('establishmentType')}</option>
             </select>
           </div>
 
           {accountType === 'user' && (
-            <p className="text-sm text-gray-400 bg-gray-50 rounded-lg px-4 py-3">
-              Cria uma conta para encontrar profissionais e estabelecimentos brasileiros em Cork.
-            </p>
+            <p className="text-sm text-gray-400 bg-gray-50 rounded-lg px-4 py-3">{t('userTypeDescription')}</p>
           )}
           {accountType === 'professional' && (
-            <p className="text-sm text-gray-400 bg-green-50 rounded-lg px-4 py-3">
-              Apos criar a conta vais preencher os detalhes do teu perfil profissional como area de trabalho, idiomas e descricao.
-            </p>
+            <p className="text-sm text-gray-400 bg-green-50 rounded-lg px-4 py-3">{t('professionalTypeDescription')}</p>
           )}
           {accountType === 'establishment' && (
-            <p className="text-sm text-gray-400 bg-green-50 rounded-lg px-4 py-3">
-              Apos criar a conta vais registar o teu negocio com nome, morada, horarios e descricao.
-            </p>
+            <p className="text-sm text-gray-400 bg-green-50 rounded-lg px-4 py-3">{t('establishmentTypeDescription')}</p>
           )}
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Nome completo</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">{t('fullName')}</label>
             <input type="text" value={name} onChange={(e) => setName(formatName(e.target.value))} placeholder="O teu nome" className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-400" />
           </div>
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Email</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">{t('emailLabel')}</label>
             <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="o-teu-email@email.com" className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-400" />
           </div>
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Password</label>
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Cria uma password" className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-400" />
-            <p className="text-xs text-gray-400 mt-1">Minimo 10 caracteres, com letra maiuscula, minuscula e numero.</p>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">{t('passwordLabel')}</label>
+            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="..." className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-400" />
+            <p className="text-xs text-gray-400 mt-1">{t('passwordHint')}</p>
           </div>
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Confirmar Password</label>
-            <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Repete a password" className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-400" />
+            <label className="block text-sm font-semibold text-gray-700 mb-1">{t('confirmPassword')}</label>
+            <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="..." className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-400" />
           </div>
-          <button onClick={handleEmailRegister} className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition">Criar Conta</button>
+          <button onClick={handleEmailRegister} className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition">{t('createAccount')}</button>
           <div className="flex items-center gap-3">
             <div className="flex-1 h-px bg-gray-200"></div>
             <span className="text-gray-400 text-sm">ou</span>
@@ -386,12 +382,12 @@ const RegisterPage = () => {
           </div>
           <button onClick={handleGoogleRegister} className="w-full flex items-center justify-center gap-3 border border-gray-300 rounded-lg px-4 py-3 hover:bg-gray-50 transition font-semibold text-gray-700">
             <img src="https://www.google.com/favicon.ico" alt="Google" className="w-5 h-5" />
-            Registar com Google
+            {t('registerWithGoogle')}
           </button>
         </div>
         <p className="text-center text-gray-500 text-sm mt-6">
-          Ja tens conta?{' '}
-          <Link to="/login" className="text-green-600 font-semibold hover:underline">Entra aqui</Link>
+          {t('alreadyHaveAccount')}{' '}
+          <Link to="/login" className="text-green-600 font-semibold hover:underline">{t('loginHere')}</Link>
         </p>
       </div>
     </div>

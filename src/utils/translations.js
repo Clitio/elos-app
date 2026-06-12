@@ -112,7 +112,57 @@ const translations = {
     accountCreated: 'A tua conta foi criada com sucesso. Ja podes explorar profissionais brasileiros em Cork.',
     viewProfessionalsButton: 'Ver Profissionais',
     myProfileButton: 'O Meu Perfil',
+
+    // Register
+    completeProfile: 'Completa o teu perfil profissional',
+    registerEstablishment: 'Regista o teu estabelecimento',
+    workArea: 'Area de trabalho',
+    locationInCork: 'Localizacao em Cork',
+    languagesYouSpeak: 'Idiomas que falas',
+    yearsInIreland: 'Anos na Irlanda',
+    category: 'Categoria',
+    description: 'Descricao',
+    completeProfileButton: 'Completar Perfil',
+    registerEstablishmentButton: 'Registar Estabelecimento',
+    establishmentName: 'Nome do estabelecimento',
+    businessType: 'Tipo de negocio',
+    address: 'Morada',
+    openingHours: 'Horarios de funcionamento',
+    languagesSpoken: 'Idiomas falados no estabelecimento',
+    passwordHint: 'Minimo 10 caracteres, com letra maiuscula, minuscula e numero.',
+    confirmPassword: 'Confirmar Password',
+    userTypeDescription: 'Cria uma conta para encontrar profissionais e estabelecimentos brasileiros em Cork.',
+    professionalTypeDescription: 'Apos criar a conta vais preencher os detalhes do teu perfil profissional.',
+    establishmentTypeDescription: 'Apos criar a conta vais registar o teu negocio com nome, morada, horarios e descricao.',
+
+    // Dashboard
+    myProfileTitle: 'O Meu Perfil',
+    manageInfo: 'Gere as tuas informacoes',
+    emailLabel2: 'Email',
+    yearsInIrelandLabel: 'Anos na Irlanda',
+    year: 'ano(s)',
+    editProfileButton: 'Editar Perfil',
+    viewDirectoryButton: 'Ver Diretorio',
+    logoutButton: 'Terminar Sessao',
+
+    // Edit Profile
+    editProfileTitle: 'Editar Perfil',
+    updateInfo: 'Atualiza as tuas informacoes',
+    saveChanges: 'Guardar Alteracoes',
+    cancel: 'Cancelar',
+    profilePhotoUrl: 'URL da foto de perfil',
+    noFieldsToEdit: 'Nao ha campos para editar numa conta de utilizador.',
+
+    // Categories descriptions
+    healthDesc: 'Medicos, farmaceuticos, enfermeiros e mais',
+    foodDesc: 'Restaurantes, mercearias e produtos brasileiros',
+    transportDesc: 'Carretos, viagens e transporte em Cork',
+    beautyDesc: 'Cabeleireiros, manicure e estetica',
+    communityDesc: 'Igrejas, grupos e eventos brasileiros',
+    accommodationDesc: 'Quartos e casas em Cork',
+    dailyDesc: 'Servicos do quotidiano em portugues',
     },
+
   en: {
     // Navbar
     about: 'About',
@@ -226,6 +276,55 @@ const translations = {
     accountCreated: 'Your account has been created successfully. You can now explore Brazilian professionals in Cork.',
     viewProfessionalsButton: 'View Professionals',
     myProfileButton: 'My Profile',
+
+    // Register
+    completeProfile: 'Complete your professional profile',
+    registerEstablishment: 'Register your establishment',
+    workArea: 'Work area',
+    locationInCork: 'Location in Cork',
+    languagesYouSpeak: 'Languages you speak',
+    yearsInIreland: 'Years in Ireland',
+    category: 'Category',
+    description: 'Description',
+    completeProfileButton: 'Complete Profile',
+    registerEstablishmentButton: 'Register Establishment',
+    establishmentName: 'Establishment name',
+    businessType: 'Business type',
+    address: 'Address',
+    openingHours: 'Opening hours',
+    languagesSpoken: 'Languages spoken at the establishment',
+    passwordHint: 'Minimum 10 characters, with uppercase, lowercase and number.',
+    confirmPassword: 'Confirm Password',
+    userTypeDescription: 'Create an account to find Brazilian professionals and establishments in Cork.',
+    professionalTypeDescription: 'After creating your account you will fill in your professional profile details.',
+    establishmentTypeDescription: 'After creating your account you will register your business with name, address, hours and description.',
+
+    // Dashboard
+    myProfileTitle: 'My Profile',
+    manageInfo: 'Manage your information',
+    emailLabel2: 'Email',
+    yearsInIrelandLabel: 'Years in Ireland',
+    year: 'year(s)',
+    editProfileButton: 'Edit Profile',
+    viewDirectoryButton: 'View Directory',
+    logoutButton: 'Logout',
+
+    // Edit Profile
+    editProfileTitle: 'Edit Profile',
+    updateInfo: 'Update your information',
+    saveChanges: 'Save Changes',
+    cancel: 'Cancel',
+    profilePhotoUrl: 'Profile photo URL',
+    noFieldsToEdit: 'There are no fields to edit for a user account.',
+
+    // Categories descriptions
+    healthDesc: 'Doctors, pharmacists, nurses and more',
+    foodDesc: 'Restaurants, grocery stores and Brazilian products',
+    transportDesc: 'Moving, trips and transport in Cork',
+    beautyDesc: 'Hairdressers, manicure and aesthetics',
+    communityDesc: 'Churches, groups and Brazilian events',
+    accommodationDesc: 'Rooms and houses in Cork',
+    dailyDesc: 'Everyday services in Portuguese',
   }
 }
 

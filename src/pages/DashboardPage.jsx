@@ -3,12 +3,15 @@ import { Link, useNavigate } from 'react-router-dom'
 import { signOut } from 'firebase/auth'
 import { doc, getDoc } from 'firebase/firestore'
 import { auth, db } from '../firebase'
+import { useLanguage } from '../context/LanguageContext'
 import defaultAvatar from '../assets/defaultAvatar'
 
 const DashboardPage = () => {
   const navigate = useNavigate()
+  const { t } = useLanguage()
   const [userData, setUserData] = useState(null)
   const [professionalData, setProfessionalData] = useState(null)
+  const [establishmentData, setEstablishmentData] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -28,6 +31,11 @@ const DashboardPage = () => {
       const professionalDoc = await getDoc(doc(db, 'professionals', user.uid))
       if (professionalDoc.exists()) {
         setProfessionalData(professionalDoc.data())
+      }
+
+      const establishmentDoc = await getDoc(doc(db, 'establishments', user.uid))
+      if (establishmentDoc.exists()) {
+        setEstablishmentData(establishmentDoc.data())
       }
 
       setLoading(false)
@@ -53,47 +61,55 @@ const DashboardPage = () => {
     )
   }
 
+  const profileData = professionalData || establishmentData
+
   return (
     <div className="max-w-3xl mx-auto px-6 py-12">
 
       <div className="text-center mb-10">
-        <h1 className="text-3xl font-bold text-gray-800">O Meu Perfil</h1>
-        <p className="text-gray-500 mt-2">Gere as tuas informacoes</p>
+        <h1 className="text-3xl font-bold text-gray-800">{t('myProfileTitle')}</h1>
+        <p className="text-gray-500 mt-2">{t('manageInfo')}</p>
       </div>
 
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-8 mb-6">
         <div className="flex items-center gap-6 mb-6">
           <img
-          src={userData?.photo || auth.currentUser?.photoURL || defaultAvatar}
-          alt={userData?.name}
-          className="w-24 h-24 rounded-full border-2 border-green-400 object-cover"
+            src={profileData?.photo || userData?.photo || auth.currentUser?.photoURL || defaultAvatar}
+            alt={userData?.name}
+            className="w-24 h-24 rounded-full border-2 border-green-400 object-cover"
           />
           <div>
             <h2 className="text-2xl font-bold text-gray-800">{userData?.name}</h2>
-            <p className="text-green-600 font-semibold">{professionalData?.area || 'Utilizador'}</p>
-            <p className="text-gray-400 text-sm">{professionalData?.location || ''}</p>
+            <p className="text-green-600 font-semibold">
+              {professionalData?.area || establishmentData?.type || ''}
+            </p>
+            <p className="text-gray-400 text-sm">
+              {professionalData?.location || establishmentData?.address || ''}
+            </p>
             <span className="inline-block bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full mt-1">
-              {userData?.accountType === 'professional' ? 'Profissional' : 'Utilizador'}
+              {userData?.accountType === 'professional' ? t('professionals') :
+               userData?.accountType === 'establishment' ? t('establishments') :
+               'Utilizador'}
             </span>
           </div>
         </div>
 
         <div className="flex flex-col gap-4">
           <div>
-            <p className="text-sm font-semibold text-gray-500">Email</p>
+            <p className="text-sm font-semibold text-gray-500">{t('emailLabel2')}</p>
             <p className="text-gray-700">{userData?.email}</p>
           </div>
 
           {professionalData && (
             <>
               <div>
-                <p className="text-sm font-semibold text-gray-500">Anos na Irlanda</p>
-                <p className="text-gray-700">{professionalData.yearsInIreland} ano(s)</p>
+                <p className="text-sm font-semibold text-gray-500">{t('yearsInIrelandLabel')}</p>
+                <p className="text-gray-700">{professionalData.yearsInIreland} {t('year')}</p>
               </div>
               <div>
-                <p className="text-sm font-semibold text-gray-500">Idiomas</p>
+                <p className="text-sm font-semibold text-gray-500">{t('languages')}</p>
                 <div className="flex flex-wrap gap-2 mt-1">
-                  {professionalData.languages.map((lang) => (
+                  {professionalData.languages && professionalData.languages.map((lang) => (
                     <span key={lang} className="bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full">
                       {lang}
                     </span>
@@ -101,8 +117,31 @@ const DashboardPage = () => {
                 </div>
               </div>
               <div>
-                <p className="text-sm font-semibold text-gray-500">Descricao</p>
+                <p className="text-sm font-semibold text-gray-500">{t('description')}</p>
                 <p className="text-gray-700">{professionalData.description}</p>
+              </div>
+            </>
+          )}
+
+          {establishmentData && (
+            <>
+              <div>
+                <p className="text-sm font-semibold text-gray-500">{t('address')}</p>
+                <p className="text-gray-700">{establishmentData.address}</p>
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-gray-500">{t('languages')}</p>
+                <div className="flex flex-wrap gap-2 mt-1">
+                  {establishmentData.languages && establishmentData.languages.map((lang) => (
+                    <span key={lang} className="bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full">
+                      {lang}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-gray-500">{t('description')}</p>
+                <p className="text-gray-700">{establishmentData.description}</p>
               </div>
             </>
           )}
@@ -114,19 +153,19 @@ const DashboardPage = () => {
           to="/edit-profile"
           className="block text-center bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition"
         >
-          Editar Perfil
+          {t('editProfileButton')}
         </Link>
         <Link
           to="/directory"
           className="block text-center border border-green-600 text-green-600 py-3 rounded-lg font-semibold hover:bg-green-50 transition"
         >
-          Ver Diretorio
+          {t('viewDirectoryButton')}
         </Link>
         <button
           onClick={handleLogout}
           className="w-full border border-red-400 text-red-400 py-3 rounded-lg font-semibold hover:bg-red-50 transition"
         >
-          Terminar Sessao
+          {t('logoutButton')}
         </button>
       </div>
 

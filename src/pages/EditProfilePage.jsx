@@ -4,12 +4,14 @@ import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { auth, db } from '../firebase'
 import PhotoUpload from '../components/PhotoUpload'
 import LanguageSelector from '../components/LanguageSelector'
+import { useLanguage } from '../context/LanguageContext'
 
 const days = ['Segunda', 'Terca', 'Quarta', 'Quinta', 'Sexta', 'Sabado', 'Domingo']
 const timeSlots = ['fechado', '08:00-17:00', '09:00-18:00', '10:00-19:00', '10:00-22:00', '12:00-22:00', '00:00-00:00']
 
 const EditProfilePage = () => {
   const navigate = useNavigate()
+  const { t } = useLanguage()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [accountType, setAccountType] = useState('user')
@@ -164,8 +166,8 @@ const EditProfilePage = () => {
   return (
     <div className="max-w-2xl mx-auto px-6 py-12">
       <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-800">Editar Perfil</h1>
-        <p className="text-gray-500 mt-2">Atualiza as tuas informacoes</p>
+        <h1 className="text-3xl font-bold text-gray-800">{t('editProfileTitle')}</h1>
+        <p className="text-gray-500 mt-2">{t('updateInfo')}</p>
       </div>
 
       {error && <p className="text-red-500 text-sm text-center mb-4">{error}</p>}
@@ -176,20 +178,11 @@ const EditProfilePage = () => {
           {accountType === 'user' && (
             <>
               <div className="flex justify-center mb-2">
-                <PhotoUpload
-                  currentPhoto={userPhoto}
-                  onUploadComplete={(url) => setUserPhoto(url)}
-                />
+                <PhotoUpload currentPhoto={userPhoto} onUploadComplete={(url) => setUserPhoto(url)} />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Nome completo</label>
-                <input
-                  type="text"
-                  value={userName}
-                  onChange={(e) => setUserName(e.target.value)}
-                  placeholder="O teu nome"
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-400"
-                />
+                <label className="block text-sm font-semibold text-gray-700 mb-1">{t('fullName')}</label>
+                <input type="text" value={userName} onChange={(e) => setUserName(e.target.value)} className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-400" />
               </div>
             </>
           )}
@@ -197,46 +190,38 @@ const EditProfilePage = () => {
           {accountType === 'professional' && (
             <>
               <div className="flex justify-center mb-2">
-                <PhotoUpload
-                  currentPhoto={photo}
-                  onUploadComplete={(url) => setPhoto(url)}
-                />
+                <PhotoUpload currentPhoto={photo} onUploadComplete={(url) => setPhoto(url)} />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Area de trabalho</label>
-                <input
-                  type="text"
-                  value={area}
-                  onChange={(e) => setArea(e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1))}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-400"
-                />
+                <label className="block text-sm font-semibold text-gray-700 mb-1">{t('workArea')}</label>
+                <input type="text" value={area} onChange={(e) => setArea(e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1))} className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-400" />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Localizacao em Cork</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">{t('locationInCork')}</label>
                 <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-400" />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Idiomas que falas</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">{t('languagesYouSpeak')}</label>
                 <LanguageSelector selected={languages} onChange={setLanguages} />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Anos na Irlanda</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">{t('yearsInIreland')}</label>
                 <input type="number" value={yearsInIreland} onChange={(e) => setYearsInIreland(e.target.value)} min={0} className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-400" />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Categoria</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">{t('category')}</label>
                 <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-400">
-                  <option value="health">Saude</option>
-                  <option value="food">Alimentacao</option>
-                  <option value="transport">Transporte</option>
-                  <option value="beauty">Beleza</option>
-                  <option value="community">Comunidade</option>
-                  <option value="accommodation">Acomodacao</option>
-                  <option value="daily">Dia a Dia</option>
+                  <option value="health">{t('health')}</option>
+                  <option value="food">{t('food')}</option>
+                  <option value="transport">{t('transport')}</option>
+                  <option value="beauty">{t('beauty')}</option>
+                  <option value="community">{t('community')}</option>
+                  <option value="accommodation">{t('accommodation')}</option>
+                  <option value="daily">{t('dailyBasis')}</option>
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Descricao</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">{t('description')}</label>
                 <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={4} className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-400" />
               </div>
             </>
@@ -245,30 +230,22 @@ const EditProfilePage = () => {
           {accountType === 'establishment' && (
             <>
               <div className="flex justify-center mb-2">
-                <PhotoUpload
-                  currentPhoto={photo}
-                  onUploadComplete={(url) => setPhoto(url)}
-                />
+                <PhotoUpload currentPhoto={photo} onUploadComplete={(url) => setPhoto(url)} />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Nome do estabelecimento</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">{t('establishmentName')}</label>
                 <input type="text" value={establishmentName} onChange={(e) => setEstablishmentName(e.target.value)} className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-400" />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Tipo de negocio</label>
-                <input
-                  type="text"
-                  value={establishmentType}
-                  onChange={(e) => setEstablishmentType(e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1))}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-400"
-                />
+                <label className="block text-sm font-semibold text-gray-700 mb-1">{t('businessType')}</label>
+                <input type="text" value={establishmentType} onChange={(e) => setEstablishmentType(e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1))} className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-400" />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Morada</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">{t('address')}</label>
                 <input type="text" value={address} onChange={(e) => setAddress(e.target.value)} className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-400" />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Horarios de funcionamento</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">{t('openingHours')}</label>
                 <div className="flex flex-col gap-2">
                   {days.map((day) => (
                     <div key={day} className="flex items-center gap-2">
@@ -287,31 +264,31 @@ const EditProfilePage = () => {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Idiomas falados no estabelecimento</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">{t('languagesSpoken')}</label>
                 <LanguageSelector selected={languages} onChange={setLanguages} />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Categoria</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">{t('category')}</label>
                 <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-400">
-                  <option value="health">Saude</option>
-                  <option value="food">Alimentacao</option>
-                  <option value="transport">Transporte</option>
-                  <option value="beauty">Beleza</option>
-                  <option value="community">Comunidade</option>
-                  <option value="accommodation">Acomodacao</option>
-                  <option value="daily">Dia a Dia</option>
+                  <option value="health">{t('health')}</option>
+                  <option value="food">{t('food')}</option>
+                  <option value="transport">{t('transport')}</option>
+                  <option value="beauty">{t('beauty')}</option>
+                  <option value="community">{t('community')}</option>
+                  <option value="accommodation">{t('accommodation')}</option>
+                  <option value="daily">{t('dailyBasis')}</option>
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Descricao</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">{t('description')}</label>
                 <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={4} className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-400" />
               </div>
             </>
           )}
 
           <div className="flex gap-4 mt-2">
-            <button onClick={handleSave} className="flex-1 bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition">Guardar Alteracoes</button>
-            <Link to="/dashboard" className="flex-1 text-center border border-gray-300 text-gray-600 py-3 rounded-lg font-semibold hover:bg-gray-50 transition">Cancelar</Link>
+            <button onClick={handleSave} className="flex-1 bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition">{t('saveChanges')}</button>
+            <Link to="/dashboard" className="flex-1 text-center border border-gray-300 text-gray-600 py-3 rounded-lg font-semibold hover:bg-gray-50 transition">{t('cancel')}</Link>
           </div>
 
         </div>
