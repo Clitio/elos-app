@@ -3,10 +3,12 @@ import { Link, useNavigate } from 'react-router-dom'
 import { onAuthStateChanged, signOut } from 'firebase/auth'
 import { doc, getDoc } from 'firebase/firestore'
 import { auth, db } from '../firebase'
+import { useLanguage } from '../context/LanguageContext'
 import defaultAvatar from '../assets/defaultAvatar'
 
 const NavBar = () => {
   const navigate = useNavigate()
+  const { language, toggleLanguage, t } = useLanguage()
   const [user, setUser] = useState(null)
   const [userData, setUserData] = useState(null)
   const [dropdownOpen, setDropdownOpen] = useState(false)
@@ -45,14 +47,20 @@ const NavBar = () => {
 
   return (
     <nav className="bg-green-600 shadow-md">
-      {/* Barra principal */}
       <div className="flex justify-between items-center px-6 py-4">
         <Link to="/" className="text-white text-2xl font-bold">Elos</Link>
 
         <div className="flex items-center gap-4">
-          <Link to="/about" className="text-white hover:underline text-sm">Sobre</Link>
-          <Link to="/search" className="text-white hover:underline text-sm">Buscar</Link>
-          <Link to="/talk-to-us" className="text-white hover:underline text-sm">Fale Connosco</Link>
+          <Link to="/about" className="text-white hover:underline text-sm">{t('about')}</Link>
+          <Link to="/search" className="text-white hover:underline text-sm">{t('search')}</Link>
+          <Link to="/talk-to-us" className="text-white hover:underline text-sm">{t('talkToUs')}</Link>
+
+          <button
+            onClick={toggleLanguage}
+            className="text-white border border-white px-3 py-1 rounded-lg text-sm font-semibold hover:bg-green-700 transition"
+          >
+            {language === 'pt' ? 'EN' : 'PT'}
+          </button>
 
           {user ? (
             <div className="relative" ref={dropdownRef}>
@@ -84,52 +92,51 @@ const NavBar = () => {
                     onClick={() => setDropdownOpen(false)}
                     className="block px-4 py-3 text-gray-700 hover:bg-green-50 text-sm font-semibold"
                   >
-                    O Meu Perfil
+                    {t('myProfile')}
                   </Link>
                   <Link
                     to="/edit-profile"
                     onClick={() => setDropdownOpen(false)}
                     className="block px-4 py-3 text-gray-700 hover:bg-green-50 text-sm"
                   >
-                    Editar Perfil
+                    {t('editProfile')}
                   </Link>
                   {userData?.isAdmin && (
-                  <Link
-                    to="/admin"
-                    onClick={() => setDropdownOpen(false)}
-                    className="block px-4 py-3 text-yellow-600 hover:bg-yellow-50 text-sm font-semibold"
-                  >
-                    Dashboard Admin
-                  </Link>
+                    <Link
+                      to="/admin"
+                      onClick={() => setDropdownOpen(false)}
+                      className="block px-4 py-3 text-yellow-600 hover:bg-yellow-50 text-sm font-semibold"
+                    >
+                      {t('adminDashboard')}
+                    </Link>
                   )}
                   <button
                     onClick={handleLogout}
                     className="w-full text-left px-4 py-3 text-red-500 hover:bg-red-50 rounded-b-xl text-sm"
                   >
-                    Terminar Sessao
+                    {t('logout')}
                   </button>
                 </div>
               )}
             </div>
           ) : (
             <>
-              <Link to="/login" className="text-white hover:underline text-sm">Login</Link>
-              <Link to="/register" className="bg-white text-green-600 px-4 py-1 rounded font-semibold text-sm">Cadastrar</Link>
+              <Link to="/login" className="text-white hover:underline text-sm">{t('login')}</Link>
+              <Link to="/register" className="bg-white text-green-600 px-4 py-1 rounded font-semibold text-sm">{t('register')}</Link>
             </>
           )}
         </div>
       </div>
 
-      {/* Barra de categorias */}
       <div className="flex gap-6 px-6 py-2 bg-green-700 overflow-x-auto">
-        <Link to="/directory" className="text-white text-sm whitespace-nowrap hover:underline">Diretorio</Link>
-        <Link to="/community" className="text-white text-sm whitespace-nowrap hover:underline">Comunidade</Link>
-        <Link to="/food" className="text-white text-sm whitespace-nowrap hover:underline">Alimentacao</Link>
-        <Link to="/health" className="text-white text-sm whitespace-nowrap hover:underline">Saude</Link>
-        <Link to="/accommodation" className="text-white text-sm whitespace-nowrap hover:underline">Acomodacao</Link>
-        <Link to="/daily-basis" className="text-white text-sm whitespace-nowrap hover:underline">Dia a Dia</Link>
-        <Link to="/transport" className="text-white text-sm whitespace-nowrap hover:underline">Transporte</Link>
-        <Link to="/beauty" className="text-white text-sm whitespace-nowrap hover:underline">Beleza</Link>
+        <Link to="/directory" className="text-white text-sm whitespace-nowrap hover:underline">{t('directory')}</Link>
+        <Link to="/community" className="text-white text-sm whitespace-nowrap hover:underline">{t('community')}</Link>
+        <Link to="/food" className="text-white text-sm whitespace-nowrap hover:underline">{t('food')}</Link>
+        <Link to="/health" className="text-white text-sm whitespace-nowrap hover:underline">{t('health')}</Link>
+        <Link to="/accommodation" className="text-white text-sm whitespace-nowrap hover:underline">{t('accommodation')}</Link>
+        <Link to="/daily-basis" className="text-white text-sm whitespace-nowrap hover:underline">{t('dailyBasis')}</Link>
+        <Link to="/transport" className="text-white text-sm whitespace-nowrap hover:underline">{t('transport')}</Link>
+        <Link to="/beauty" className="text-white text-sm whitespace-nowrap hover:underline">{t('beauty')}</Link>
       </div>
     </nav>
   )

@@ -1,8 +1,10 @@
 import React from 'react'
 import CategoryPage from '../components/CategoryPage'
+import { useLanguage } from '../context/LanguageContext'
 
 const FoodPage = () => {
-  return <CategoryPage category="food" title="Alimentacao" description="Restaurantes, mercearias e produtos brasileiros" />
+  const { t } = useLanguage()
+  return <CategoryPage category="food" title={t('food')} description="Restaurantes, mercearias e produtos brasileiros" />
 }
 
 export default FoodPage

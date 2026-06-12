@@ -1,8 +1,10 @@
 import React from 'react'
 import CategoryPage from '../components/CategoryPage'
+import { useLanguage } from '../context/LanguageContext'
 
 const CommunityPage = () => {
-  return <CategoryPage category="community" title="Comunidade" description="Igrejas, grupos e eventos brasileiros" />
+  const { t } = useLanguage()
+  return <CategoryPage category="community" title={t('community')} description="Igrejas, grupos e eventos brasileiros" />
 }
 
 export default CommunityPage

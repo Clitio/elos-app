@@ -3,10 +3,12 @@ import { Link, useParams } from 'react-router-dom'
 import { doc, getDoc } from 'firebase/firestore'
 import { onAuthStateChanged } from 'firebase/auth'
 import { auth, db } from '../firebase'
+import { useLanguage } from '../context/LanguageContext'
 import defaultAvatar from '../assets/defaultAvatar'
 
 const ProfessionalDetailsPage = () => {
   const { id } = useParams()
+  const { t } = useLanguage()
   const [item, setItem] = useState(null)
   const [type, setType] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -60,35 +62,35 @@ const ProfessionalDetailsPage = () => {
     return (
       <div className="text-center py-20">
         <h2 className="text-2xl font-bold text-gray-700">Perfil nao encontrado</h2>
-        <Link to="/directory" className="text-green-600 hover:underline mt-4 inline-block">Voltar ao Diretorio</Link>
+        <Link to="/directory" className="text-green-600 hover:underline mt-4 inline-block">{t('backToDirectory')}</Link>
       </div>
     )
   }
 
   return (
     <div className="max-w-2xl mx-auto px-6 py-12">
-      <Link to="/directory" className="text-green-600 hover:underline text-sm mb-6 inline-block">Voltar ao Diretorio</Link>
+      <Link to="/directory" className="text-green-600 hover:underline text-sm mb-6 inline-block">{t('backToDirectory')}</Link>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
 
         <div className="flex items-center gap-6 mb-6">
           <img
-          src={item.photo || defaultAvatar}
-          alt={item.name}
-          className="w-24 h-24 rounded-full border-2 border-green-400 object-cover"
+            src={item.photo || defaultAvatar}
+            alt={item.name}
+            className="w-24 h-24 rounded-full border-2 border-green-400 object-cover"
           />
           <div>
             <h1 className="text-2xl font-bold text-gray-800">{item.name}</h1>
             <p className="text-green-600 font-semibold">{item.area || item.type}</p>
             <p className="text-gray-400 text-sm">{item.location || item.address}</p>
             <span className={`inline-block text-xs px-3 py-1 rounded-full mt-1 ${type === 'establishment' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'}`}>
-              {type === 'establishment' ? 'Estabelecimento' : 'Profissional'}
+              {type === 'establishment' ? t('establishments') : t('professionals')}
             </span>
           </div>
         </div>
 
         <div className="mb-6">
-          <h2 className="text-lg font-bold text-gray-700 mb-2">Sobre</h2>
+          <h2 className="text-lg font-bold text-gray-700 mb-2">{t('about_section')}</h2>
           <p className="text-gray-600">{item.description}</p>
         </div>
 
@@ -122,7 +124,7 @@ const ProfessionalDetailsPage = () => {
 
         {item.languages && item.languages.length > 0 && (
           <div className="mb-6">
-            <h2 className="text-lg font-bold text-gray-700 mb-2">Idiomas</h2>
+            <h2 className="text-lg font-bold text-gray-700 mb-2">{t('languages')}</h2>
             <div className="flex flex-wrap gap-2">
               {item.languages.map((lang) => (
                 <span key={lang} className="bg-green-100 text-green-700 text-sm px-3 py-1 rounded-full">{lang}</span>
@@ -131,29 +133,29 @@ const ProfessionalDetailsPage = () => {
           </div>
         )}
 
-        <div className="border-t pt-6">
-          <h2 className="text-lg font-bold text-gray-700 mb-2">Contacto</h2>
+ <div className="border-t pt-6">
+          <h2 className="text-lg font-bold text-gray-700 mb-2">{t('contact')}</h2>
           {user ? (
             <a 
               href={"mailto:" + item.email}
               className="block text-center bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition"
             >
-              Enviar Email
+              {t('sendEmail')}
             </a>
           ) : (
             <div className="text-center">
-              <p className="text-gray-500 text-sm mb-3">Precisas de ter uma conta para entrar em contacto.</p>
+              <p className="text-gray-500 text-sm mb-3">{t('needAccountToContact')}</p>
               <Link
                 to="/register"
                 className="block bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition"
               >
-                Criar Conta
+                {t('createAccountButton')}
               </Link>
               <Link
                 to="/login"
                 className="block mt-2 border border-green-600 text-green-600 py-3 rounded-lg font-semibold hover:bg-green-50 transition"
               >
-                Ja tenho conta
+                {t('alreadyHaveAccountButton')}
               </Link>
             </div>
           )}

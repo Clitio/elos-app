@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react'
 import { collection, getDocs, query, where } from 'firebase/firestore'
 import { db } from '../firebase'
 import ProfessionalCard from './ProfessionalCard'
+import { useLanguage } from '../context/LanguageContext'
 
 const CategoryPage = ({ category, title, description }) => {
+  const { t } = useLanguage()
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(true)
 
@@ -53,8 +55,7 @@ const CategoryPage = ({ category, title, description }) => {
       </div>
       {items.length === 0 ? (
         <div className="text-center py-20">
-          <p className="text-gray-400 text-lg">Nenhum resultado nesta categoria ainda.</p>
-          <p className="text-gray-400 text-sm mt-2">Se o primeiro a cadastrar-te!</p>
+          <p className="text-gray-400 text-lg">{t('noResults')}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
