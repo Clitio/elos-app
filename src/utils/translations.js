@@ -161,6 +161,10 @@ const translations = {
     communityDesc: 'Igrejas, grupos e eventos brasileiros',
     accommodationDesc: 'Quartos e casas em Cork',
     dailyDesc: 'Servicos do quotidiano em portugues',
+
+    homeSubtitle: 'Ninguem deveria enfrentar a Irlanda sozinho.',
+    homeDescription: 'Encontra profissionais brasileiros em Cork que falam a tua lingua e entendem a tua cultura.',
+    footer: 'Feito por um brasileiro, para brasileiros.',
     },
 
   en: {
@@ -325,6 +329,10 @@ const translations = {
     communityDesc: 'Churches, groups and Brazilian events',
     accommodationDesc: 'Rooms and houses in Cork',
     dailyDesc: 'Everyday services in Portuguese',
+
+    homeSubtitle: 'Nobody should face Ireland alone.',
+    homeDescription: 'Find Brazilian professionals in Cork who speak your language and understand your culture.',
+    footer: 'Made by a Brazilian, for Brazilians.',
   }
 }
 
