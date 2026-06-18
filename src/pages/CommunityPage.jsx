@@ -4,7 +4,7 @@ import { useLanguage } from '../context/LanguageContext'
 
 const CommunityPage = () => {
   const { t } = useLanguage()
-  return <CategoryPage category="community" title={t('community')} description="Igrejas, grupos e eventos brasileiros" />
+  return <CategoryPage category="community" title={t('community')} description={t('communityDesc')} gradient="green" />
 }
 
 export default CommunityPage

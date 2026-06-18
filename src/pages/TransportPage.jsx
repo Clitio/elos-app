@@ -4,7 +4,7 @@ import { useLanguage } from '../context/LanguageContext'
 
 const TransportPage = () => {
   const { t } = useLanguage()
-  return <CategoryPage category="transport" title={t('transport')} description="Carretos, viagens e transporte em Cork" />
+  return <CategoryPage category="transport" title={t('transport')} description={t('transportDesc')} gradient="blue" />
 }
 
 export default TransportPage

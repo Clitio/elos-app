@@ -4,7 +4,7 @@ import { useLanguage } from '../context/LanguageContext'
 
 const AccommodationPage = () => {
   const { t } = useLanguage()
-  return <CategoryPage category="accommodation" title={t('accommodation')} description="Quartos e casas em Cork" />
+  return <CategoryPage category="accommodation" title={t('accommodation')} description={t('accommodationDesc')} gradient="blue" />
 }
 
 export default AccommodationPage

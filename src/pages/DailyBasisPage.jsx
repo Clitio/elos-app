@@ -4,7 +4,7 @@ import { useLanguage } from '../context/LanguageContext'
 
 const DailyBasisPage = () => {
   const { t } = useLanguage()
-  return <CategoryPage category="daily" title={t('dailyBasis')} description="Servicos do quotidiano em portugues" />
+  return <CategoryPage category="daily" title={t('dailyBasis')} description={t('dailyDesc')} gradient="dark" />
 }
 
 export default DailyBasisPage

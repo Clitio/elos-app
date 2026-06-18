@@ -1,8 +1,16 @@
+//here lies the BRAIN behind the site. The one in charge of deciding what page will be loaded on the screen
+
 import React from 'react'
+//library in charge of the SPA. This import intercepts the user click and changes the JS on screen
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+//Vital components present in almost every page on the site
 import NavBar from './components/Navbar'
+//This one in particular protects the confidencial pages of the site
 import PrivateRoute from './components/PrivateRoute'
 
+//All those imports come from pages created by us.
+//They stay here on stand by waiting to be called by the user
+//Those are like the actors waiting for their own screen-time
 import HomePage from './pages/HomePage'
 import AboutPage from './pages/AboutPage'
 import SearchPage from './pages/SearchPage'
@@ -22,13 +30,20 @@ import TransportPage from './pages/TransportPage'
 import BeautyPage from './pages/BeautyPage'
 import ProfessionalDetailsPage from './pages/ProfessionalDetailsPage'
 import AdminPage from './pages/AdminPage'
+import NotFoundPage from './pages/NotFoundPage'
+import AddProfilePage from './pages/AddProfilePage'
 
 const App = () => {
   return (
+    //It must be the first in onder to guide the subsequent ones
     <Router>
+      {/* Navbar outside of Routes helps us to save processing time since It's never destroyed while
+      travelling through the pages */}
       <NavBar />
       <Routes>
-        {/* Rotas publicas */}
+        {/* Almost like an if statement. If the URL changes, It cleans erase the old page and injects the requested one */}
+        {/* Public routes*/}
+        {/* Routes that can be accesed by any user */}
         <Route path="/" element={<HomePage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/search" element={<SearchPage />} />
@@ -44,12 +59,18 @@ const App = () => {
         <Route path="/beauty" element={<BeautyPage />} />
         <Route path="/professional/:id" element={<ProfessionalDetailsPage />} />
 
-        {/* Rotas privadas */}
+        {/* Private Routes */}
+        {/* Routes only accesible by the proper user, under proper circunstances */}
+        {/* This structured checks if the user is logged in order to access their page
+        JS checks with Firebase if the user is logged. */}
         <Route path="/dashboard" element={<PrivateRoute><DashboardPage /></PrivateRoute>} />
         <Route path="/edit-profile" element={<PrivateRoute><EditProfilePage /></PrivateRoute>} />
         <Route path="/success" element={<PrivateRoute><SuccessPage /></PrivateRoute>} />
         <Route path="/talk-to-us" element={<PrivateRoute><TalkToUsPage /></PrivateRoute>} />
         <Route path="/admin" element={<PrivateRoute><AdminPage /></PrivateRoute>} />
+        <Route path="/add-profile" element={<PrivateRoute><AddProfilePage /></PrivateRoute>} />
+        {/* If the user looks for a page that doesn't exist, React throws this page instead of crashing */}
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Router>
   )

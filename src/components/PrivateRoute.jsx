@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Navigate } from 'react-router-dom'
 import { onAuthStateChanged } from 'firebase/auth'
 import { auth } from '../firebase'
+import LoadingSpinner from '../components/LoadingSpinner'
 
 const PrivateRoute = ({ children }) => {
   const [user, setUser] = useState(undefined)
@@ -13,17 +14,9 @@ const PrivateRoute = ({ children }) => {
     return () => unsubscribe()
   }, [])
 
-  if (user === undefined) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-400 text-lg">A carregar...</p>
-      </div>
-    )
-  }
+  if (user === undefined) return <LoadingSpinner />
 
-  if (!user) {
-    return <Navigate to="/login" />
-  }
+  if (!user) return <Navigate to="/login" />
 
   return children
 }

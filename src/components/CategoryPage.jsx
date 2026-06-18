@@ -2,9 +2,12 @@ import React, { useState, useEffect } from 'react'
 import { collection, getDocs, query, where } from 'firebase/firestore'
 import { db } from '../firebase'
 import ProfessionalCard from './ProfessionalCard'
+import PageHeader from './PageHeader'
+import AnimatedSection from './AnimatedSection'
+import LoadingSpinner from './LoadingSpinner'
 import { useLanguage } from '../context/LanguageContext'
 
-const CategoryPage = ({ category, title, description }) => {
+const CategoryPage = ({ category, title, description, gradient = 'green' }) => {
   const { t } = useLanguage()
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(true)
@@ -15,17 +18,13 @@ const CategoryPage = ({ category, title, description }) => {
         const profQuery = query(collection(db, 'professionals'), where('category', '==', category))
         const profSnapshot = await getDocs(profQuery)
         const profData = profSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          type: 'professional',
-          ...doc.data()
+          id: doc.id, profileType: 'professional', ...doc.data()
         }))
 
         const estQuery = query(collection(db, 'establishments'), where('category', '==', category))
         const estSnapshot = await getDocs(estQuery)
         const estData = estSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          type: 'establishment',
-          ...doc.data()
+          id: doc.id, profileType: 'establishment', ...doc.data()
         }))
 
         setItems([...profData, ...estData])
@@ -39,31 +38,30 @@ const CategoryPage = ({ category, title, description }) => {
     fetchData()
   }, [category])
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-400 text-lg">A carregar...</p>
-      </div>
-    )
-  }
+  if (loading) return <LoadingSpinner />
 
   return (
-    <div className="max-w-5xl mx-auto px-6 py-12">
-      <div className="mb-10">
-        <h1 className="text-3xl font-bold text-gray-800 mb-2">{title}</h1>
-        <p className="text-gray-500">{description}</p>
+    <div>
+      <PageHeader title={title} subtitle={description} gradient={gradient} />
+
+      <div className="max-w-5xl mx-auto px-6 py-12">
+        {items.length === 0 ? (
+          <AnimatedSection direction="up">
+            <div className="text-center py-20">
+              <p className="text-gray-400 text-lg">{t('noResults')}</p>
+              <p className="text-gray-400 text-sm mt-2">Se o primeiro a cadastrar-te!</p>
+            </div>
+          </AnimatedSection>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {items.map((item, index) => (
+              <AnimatedSection key={item.id} direction="up" delay={index * 0.05}>
+                <ProfessionalCard {...item} />
+              </AnimatedSection>
+            ))}
+          </div>
+        )}
       </div>
-      {items.length === 0 ? (
-        <div className="text-center py-20">
-          <p className="text-gray-400 text-lg">{t('noResults')}</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {items.map((item) => (
-            <ProfessionalCard key={item.id} {...item} />
-          ))}
-        </div>
-      )}
     </div>
   )
 }

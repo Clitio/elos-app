@@ -165,6 +165,18 @@ const translations = {
     homeSubtitle: 'Ninguem deveria enfrentar a Irlanda sozinho.',
     homeDescription: 'Encontra profissionais brasileiros em Cork que falam a tua lingua e entendem a tua cultura.',
     footer: 'Feito por um brasileiro, para brasileiros.',
+
+    myProfiles: 'Os Meus Perfis',
+    addNewProfile: 'Adicionar Novo Perfil',
+    maxProfilesReached: 'Atingiste o limite de 5 perfis.',
+    whatsappNumber: 'Numero de WhatsApp (opcional)',
+    whatsappPlaceholder: 'Ex: 353871234567',
+    contactViaWhatsapp: 'Contactar via WhatsApp',
+    contactViaEmail: 'Contactar via Email',
+    deleteProfile: 'Apagar Perfil',
+    confirmDeleteProfile: 'Tens a certeza que queres apagar este perfil?',
+    editThisProfile: 'Editar este perfil',
+    profilesCount: 'perfil(s)',
     },
 
   en: {
@@ -333,6 +345,18 @@ const translations = {
     homeSubtitle: 'Nobody should face Ireland alone.',
     homeDescription: 'Find Brazilian professionals in Cork who speak your language and understand your culture.',
     footer: 'Made by a Brazilian, for Brazilians.',
+
+    myProfiles: 'My Profiles',
+    addNewProfile: 'Add New Profile',
+    maxProfilesReached: 'You have reached the limit of 5 profiles.',
+    whatsappNumber: 'WhatsApp number (optional)',
+    whatsappPlaceholder: 'E.g: 353871234567',
+    contactViaWhatsapp: 'Contact via WhatsApp',
+    contactViaEmail: 'Contact via Email',
+    deleteProfile: 'Delete Profile',
+    confirmDeleteProfile: 'Are you sure you want to delete this profile?',
+    editThisProfile: 'Edit this profile',
+    profilesCount: 'profile(s)',
   }
 }
 

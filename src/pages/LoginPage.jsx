@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { signInWithPopup, signInWithEmailAndPassword } from 'firebase/auth'
 import { auth, googleProvider } from '../firebase'
 import { useLanguage } from '../context/LanguageContext'
+import AnimatedSection from '../components/AnimatedSection'
 
 const LoginPage = () => {
   const navigate = useNavigate()
@@ -13,9 +14,7 @@ const LoginPage = () => {
 
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === 'Enter') {
-        handleEmailLogin()
-      }
+      if (e.key === 'Enter') handleEmailLogin()
     }
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
@@ -46,69 +45,86 @@ const LoginPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 w-full max-w-md">
+    <div
+      className="min-h-screen flex items-center justify-center px-4"
+      style={{ background: 'linear-gradient(135deg, #009c3b 0%, #0d2b1a 50%, #169b62 100%)' }}
+    >
+      <AnimatedSection direction="up" className="w-full max-w-md">
+        <div className="bg-white rounded-3xl shadow-2xl p-8">
 
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-green-600">Elos</h1>
-          <p className="text-gray-500 mt-2">{t('loginTitle')}</p>
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-black" style={{ background: 'linear-gradient(135deg, #009c3b, #0d2b1a)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+              ELOS
+            </h1>
+            <div className="flex justify-center gap-2 mt-2 mb-4">
+              <div className="h-1 w-8 rounded-full bg-yellow-400"></div>
+              <div className="h-1 w-8 rounded-full bg-green-600"></div>
+              <div className="h-1 w-8 rounded-full" style={{ backgroundColor: '#169b62' }}></div>
+            </div>
+            <p className="text-gray-500">{t('loginTitle')}</p>
+          </div>
+
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-3 rounded-xl mb-4 text-center">
+              {error}
+            </div>
+          )}
+
+          <div className="flex flex-col gap-4">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">{t('emailLabel')}</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="email@exemplo.com"
+                className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-green-400 shadow-sm"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">{t('passwordLabel')}</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••••"
+                className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-green-400 shadow-sm"
+              />
+            </div>
+
+            <button
+              onClick={handleEmailLogin}
+              className="w-full text-white py-3 rounded-xl font-bold hover:opacity-90 transition mt-2 shadow-lg"
+              style={{ background: 'linear-gradient(135deg, #009c3b, #0d2b1a)' }}
+            >
+              {t('loginButton')}
+            </button>
+
+            <div className="flex items-center gap-3">
+              <div className="flex-1 h-px bg-gray-200"></div>
+              <span className="text-gray-400 text-sm">ou</span>
+              <div className="flex-1 h-px bg-gray-200"></div>
+            </div>
+
+            <button
+              onClick={handleGoogleLogin}
+              className="w-full flex items-center justify-center gap-3 border border-gray-200 rounded-xl px-4 py-3 hover:bg-gray-50 transition font-semibold text-gray-700 shadow-sm"
+            >
+              <img src="https://www.google.com/favicon.ico" alt="Google" className="w-5 h-5" />
+              {t('loginWithGoogle')}
+            </button>
+          </div>
+
+          <p className="text-center text-gray-500 text-sm mt-6">
+            {t('noAccount')}{' '}
+            <Link to="/register" className="text-green-600 font-bold hover:underline">
+              {t('registerHere')}
+            </Link>
+          </p>
+
         </div>
-
-        {error && <p className="text-red-500 text-sm text-center mb-4">{error}</p>}
-
-        <div className="flex flex-col gap-4">
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">{t('emailLabel')}</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="o-teu-email@email.com"
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-400"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">{t('passwordLabel')}</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="A tua password"
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-400"
-            />
-          </div>
-
-          <button
-            onClick={handleEmailLogin}
-            className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition mt-2"
-          >
-            {t('loginButton')}
-          </button>
-
-          <div className="flex items-center gap-3">
-            <div className="flex-1 h-px bg-gray-200"></div>
-            <span className="text-gray-400 text-sm">ou</span>
-            <div className="flex-1 h-px bg-gray-200"></div>
-          </div>
-
-          <button
-            onClick={handleGoogleLogin}
-            className="w-full flex items-center justify-center gap-3 border border-gray-300 rounded-lg px-4 py-3 hover:bg-gray-50 transition font-semibold text-gray-700"
-          >
-            <img src="https://www.google.com/favicon.ico" alt="Google" className="w-5 h-5" />
-            {t('loginWithGoogle')}
-          </button>
-        </div>
-
-        <p className="text-center text-gray-500 text-sm mt-6">
-          {t('noAccount')}{' '}
-          <Link to="/register" className="text-green-600 font-semibold hover:underline">
-            {t('registerHere')}
-          </Link>
-        </p>
-
-      </div>
+      </AnimatedSection>
     </div>
   )
 }

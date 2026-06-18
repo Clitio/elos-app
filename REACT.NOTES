@@ -1,0 +1,67 @@
+In order to create and use React in the future, few steps must be followed.
+
+1. Install all the vital libraries to allow your machine to have full access.
+2. Install Tailwind as it makes styling easier and more intuitive.
+
+Now moving to the pages themselves.
+
+1. index.html comes first (heart)
+    It is the heart of your project and all the other pages will be injected in this only page
+    Try to see this guy as an empty screen which will display all the information required without asking you to move
+    <head><body> and the root element are born here
+    A link to the next step is also created here src/main.jsx
+
+2. src/main.jsx comes second (squeleton)
+    Here we start to import the crucial elements which will make our application safer and more efficient
+    StrictMode, createRoot and index.css are the 3 main keys for this to be reliable
+        One responsible for safety, another the engine which translates JS to JSX and the syling with Tailwind
+    "createRoot(document.getElementById('root')).render" is created to track and "capture" the root instantiated on the first step
+    Now <StrictMode> englobes everything to display any error message to us
+        <App> also makes its first shown here. This is the "director" in charge to decide who will be shinning now.
+            (what page will be displayed this time)
+
+3. To conclude the holy trinity src/App.jsx comes (brain)
+    Here will be decide what page will shine. The director comes into action
+    import { BrowserRouter as Router, Routes, Route } from 'react-router-dom' | PrivateRoute | NavBar
+        The main one being the first, which decides what page will appear on screen.
+        Every other global component must be imported here
+    In addition, all other pages being used on the applpication MUST be imported here as well
+    const App = () => a function without arguments is created and inside of it, the routes are stablished
+        <Router> leads the way, englobing everything.
+            <NavBar> follows as a way to save memory
+            <Routes> encapsulates the route of every page imported earlier (<Route path="/" element={<HomePage />} />)
+            p.s Routes accessible by anyoone are created as above
+            => private routes only accessible by certain users must be more strict 
+            (<Route path="/dashboard" element={<PrivateRoute><DashboardPage /></PrivateRoute>} />)
+    After that, we export default App to be used
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+useEffect => used ONLY when something must happen automatically, without the user touching or acting in someway
+    usually useful to sync the site with external elements (database, APIs, etc...)
+Ways to control it:
+    [] Empty Array => the code will run only once when "spaws" on screen
+    [variable] With a Variable inside the array => React keeps the track of that specific variable, once it changes, it runs the effect again to sync.
+    p.s => NEVER leaves an useEffect without an array, otherwise It'll break the code and run infinitely
+------------------------------------------------------------------------------------------------------------------
+useState => A way to store data and draw what the user must be seing.
+    if the changing of a data demands a visual update for the user, useState must be used
+------------------------------------------------------------------------------------------------------------------
+useRef => Used to save settings that must be remembered by the page but doesn't need to be displayed on screen
+    if we want to keep the track of an element, but don't need to user to see it being changed, we use useRef
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+const () => => The most common and popular way to create a function in JS
+    safer to use than its predecessor (var) since It doesn't allow the function to be rewritten afterwards accidentaly
+    if such acction is tried, JS throws an error and doesn't allow the code to go through
+const is also used to store variables that will be rendered immediately after loading the screen.
+const before () => {} is a Function Declaration, defining a rule or action that the website can execute at any time
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+=> src/components
+    Components are like reusable parts of code used to save space and time on your pages.
+    Whenever you need something that will be essential in most pages, we create a new component.
+    Navbar, LanguageSelector and LoadingSpinner are good examples.
+
+Navbar as a practical example
+    1. Respectives imports to be used into the file
+    2. Component's signature | const NavBar = () => {} | Simple way to assign ad create simple functions (EVERY SINGLE FUNCTION WILL BE INSIDE THIS GUY)
+        The imported const's will be reassigned here | const navigate = useNavigate() |
+
