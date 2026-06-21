@@ -131,7 +131,7 @@ const AddProfilePage = () => {
     <div>
       <PageHeader
         title={t('addNewProfile')}
-        subtitle={`${totalProfiles}/5 ${t('profilesCount')}`}
+        subtitle={`${totalProfiles}/5 ${t('addProfileSubtitle')}`}
         gradient="green"
       />
 
@@ -145,9 +145,8 @@ const AddProfilePage = () => {
               </div>
             )}
 
-            {/* Tipo de perfil */}
             <div className="mb-6">
-              <label className="block text-sm font-semibold text-gray-700 mb-3">{t('accountType')}</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-3">{t('selectProfileType')}</label>
               <div className="flex gap-3">
                 <button
                   onClick={() => setProfileType('professional')}
@@ -257,7 +256,7 @@ const AddProfilePage = () => {
                   className="flex-1 text-white py-4 rounded-2xl font-bold hover:opacity-90 transition shadow-lg"
                   style={{ background: profileType === 'establishment' ? 'linear-gradient(135deg, #1a3a6b, #0d2b1a)' : 'linear-gradient(135deg, #009c3b, #0d2b1a)' }}
                 >
-                  {t('saveChanges')}
+                  {t('saveProfile')}
                 </button>
                 <button
                   onClick={() => navigate('/dashboard')}

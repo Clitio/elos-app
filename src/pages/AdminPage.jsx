@@ -51,7 +51,7 @@ const AdminPage = () => {
   }, [navigate])
 
   const handleDeleteUser = async (id) => {
-    if (!window.confirm('Tens a certeza que queres apagar este utilizador?')) return
+    if (!window.confirm(t('confirmDeleteUser'))) return
     try {
       await deleteDoc(doc(db, 'users', id))
       setUsers(users.filter((u) => u.id !== id))
@@ -61,7 +61,7 @@ const AdminPage = () => {
   }
 
   const handleDeleteProfessional = async (id) => {
-    if (!window.confirm('Tens a certeza que queres apagar este profissional?')) return
+    if (!window.confirm(t('confirmDeleteProfessional'))) return
     try {
       await deleteDoc(doc(db, 'professionals', id))
       setProfessionals(professionals.filter((p) => p.id !== id))
@@ -71,7 +71,7 @@ const AdminPage = () => {
   }
 
   const handleDeleteEstablishment = async (id) => {
-    if (!window.confirm('Tens a certeza que queres apagar este estabelecimento?')) return
+    if (!window.confirm(t('confirmDeleteEstablishment'))) return
     try {
       await deleteDoc(doc(db, 'establishments', id))
       setEstablishments(establishments.filter((e) => e.id !== id))
@@ -83,7 +83,7 @@ const AdminPage = () => {
   if (loading) return <LoadingSpinner />
 
   const tabs = [
-    { key: 'users', label: `Utilizadores (${users.length})` },
+    { key: 'users', label: `${t('usersLabel')} (${users.length})` },
     { key: 'professionals', label: `${t('professionals')} (${professionals.length})` },
     { key: 'establishments', label: `${t('establishments')} (${establishments.length})` },
   ]
@@ -91,18 +91,17 @@ const AdminPage = () => {
   return (
     <div>
       <PageHeader
-        title={t('adminDashboard')}
-        subtitle="Gere todos os utilizadores e perfis do Elos"
+        title={t('adminTitle')}
+        subtitle={t('adminSubtitle')}
         gradient="dark"
       />
 
       <div className="max-w-6xl mx-auto px-6 py-12">
 
-        {/* Stats */}
         <AnimatedSection direction="up">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
             {[
-              { label: 'Utilizadores', value: users.length, gradient: 'linear-gradient(135deg, #009c3b, #0d2b1a)' },
+              { label: t('usersLabel'), value: users.length, gradient: 'linear-gradient(135deg, #009c3b, #0d2b1a)' },
               { label: t('professionals'), value: professionals.length, gradient: 'linear-gradient(135deg, #1a3a6b, #0d2b1a)' },
               { label: t('establishments'), value: establishments.length, gradient: 'linear-gradient(135deg, #ffdf00, #ff8c00)' },
             ].map((stat) => (
@@ -118,7 +117,6 @@ const AdminPage = () => {
           </div>
         </AnimatedSection>
 
-        {/* Tabs */}
         <AnimatedSection direction="up" delay={0.1}>
           <div className="flex gap-2 mb-8 flex-wrap">
             {tabs.map((tab) => (
@@ -138,12 +136,11 @@ const AdminPage = () => {
           </div>
         </AnimatedSection>
 
-        {/* Utilizadores */}
         {activeTab === 'users' && (
           <div className="flex flex-col gap-4">
             {users.length === 0 && (
               <AnimatedSection direction="up">
-                <p className="text-gray-400 text-center py-10">Nenhum utilizador encontrado.</p>
+                <p className="text-gray-400 text-center py-10">{t('noUsersFound')}</p>
               </AnimatedSection>
             )}
             {users.map((user, index) => (
@@ -174,7 +171,7 @@ const AdminPage = () => {
                       onClick={() => handleDeleteUser(user.id)}
                       className="bg-red-50 text-red-500 border border-red-200 px-4 py-2 rounded-xl text-sm font-semibold hover:bg-red-100 transition"
                     >
-                      Apagar
+                      {t('deleteButton')}
                     </button>
                   )}
                 </div>
@@ -183,12 +180,11 @@ const AdminPage = () => {
           </div>
         )}
 
-        {/* Profissionais */}
         {activeTab === 'professionals' && (
           <div className="flex flex-col gap-4">
             {professionals.length === 0 && (
               <AnimatedSection direction="up">
-                <p className="text-gray-400 text-center py-10">Nenhum profissional encontrado.</p>
+                <p className="text-gray-400 text-center py-10">{t('noProfessionalsFound')}</p>
               </AnimatedSection>
             )}
             {professionals.map((p, index) => (
@@ -209,7 +205,7 @@ const AdminPage = () => {
                       onClick={() => handleDeleteProfessional(p.id)}
                       className="bg-red-50 text-red-500 border border-red-200 px-4 py-2 rounded-xl text-sm font-semibold hover:bg-red-100 transition"
                     >
-                      Apagar
+                      {t('deleteButton')}
                     </button>
                   </div>
                 </div>
@@ -218,12 +214,11 @@ const AdminPage = () => {
           </div>
         )}
 
-        {/* Estabelecimentos */}
         {activeTab === 'establishments' && (
           <div className="flex flex-col gap-4">
             {establishments.length === 0 && (
               <AnimatedSection direction="up">
-                <p className="text-gray-400 text-center py-10">Nenhum estabelecimento encontrado.</p>
+                <p className="text-gray-400 text-center py-10">{t('noEstablishmentsFound')}</p>
               </AnimatedSection>
             )}
             {establishments.map((e, index) => (
@@ -235,7 +230,7 @@ const AdminPage = () => {
                       <img src={e.photo || defaultAvatar} alt={e.name} className="w-14 h-14 rounded-2xl object-cover border-2 border-blue-400" />
                       <div>
                         <p className="font-bold text-gray-800">{e.name}</p>
-                        <p className="text-blue-600 text-sm font-semibold">{e.type}</p>
+                        <p className="text-blue-600 text-sm font-semibold">{e.businessType}</p>
                         <p className="text-gray-400 text-sm">{e.email}</p>
                         <p className="text-gray-400 text-sm">📍 {e.address}</p>
                       </div>
@@ -244,7 +239,7 @@ const AdminPage = () => {
                       onClick={() => handleDeleteEstablishment(e.id)}
                       className="bg-red-50 text-red-500 border border-red-200 px-4 py-2 rounded-xl text-sm font-semibold hover:bg-red-100 transition"
                     >
-                      Apagar
+                      {t('deleteButton')}
                     </button>
                   </div>
                 </div>

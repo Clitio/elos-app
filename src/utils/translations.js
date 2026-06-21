@@ -177,6 +177,20 @@ const translations = {
     confirmDeleteProfile: 'Tens a certeza que queres apagar este perfil?',
     editThisProfile: 'Editar este perfil',
     profilesCount: 'perfil(s)',
+
+    adminTitle: 'Dashboard Admin',
+    adminSubtitle: 'Gere todos os utilizadores e perfis do Elos',
+    usersLabel: 'Utilizadores',
+    noUsersFound: 'Nenhum utilizador encontrado.',
+    noProfessionalsFound: 'Nenhum profissional encontrado.',
+    noEstablishmentsFound: 'Nenhum estabelecimento encontrado.',
+    deleteButton: 'Apagar',
+    confirmDeleteUser: 'Tens a certeza que queres apagar este utilizador?',
+    confirmDeleteProfessional: 'Tens a certeza que queres apagar este profissional?',
+    confirmDeleteEstablishment: 'Tens a certeza que queres apagar este estabelecimento?',
+    addProfileSubtitle: 'perfil(s)',
+    selectProfileType: 'Escolhe o tipo de perfil',
+    saveProfile: 'Guardar Perfil',
     },
 
   en: {
@@ -357,6 +371,20 @@ const translations = {
     confirmDeleteProfile: 'Are you sure you want to delete this profile?',
     editThisProfile: 'Edit this profile',
     profilesCount: 'profile(s)',
+
+    adminTitle: 'Admin Dashboard',
+    adminSubtitle: 'Manage all Elos users and profiles',
+    usersLabel: 'Users',
+    noUsersFound: 'No users found.',
+    noProfessionalsFound: 'No professionals found.',
+    noEstablishmentsFound: 'No establishments found.',
+    deleteButton: 'Delete',
+    confirmDeleteUser: 'Are you sure you want to delete this user?',
+    confirmDeleteProfessional: 'Are you sure you want to delete this professional?',
+    confirmDeleteEstablishment: 'Are you sure you want to delete this establishment?',
+    addProfileSubtitle: 'profile(s)',
+    selectProfileType: 'Choose profile type',
+    saveProfile: 'Save Profile',
   }
 }
 
