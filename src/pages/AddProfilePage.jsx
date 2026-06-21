@@ -98,7 +98,7 @@ const AddProfilePage = () => {
           name: establishmentName,
           email: user.email,
           photo: photo || null,
-          type: establishmentType,
+          businessType: establishmentType,
           address,
           whatsapp: whatsapp || null,
           openingHours: JSON.stringify(openingHours),

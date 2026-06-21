@@ -94,12 +94,8 @@ const NavBar = () => {
                   >
                     {t('myProfile')}
                   </Link>
-                  <Link
-                    to="/edit-profile"
-                    onClick={() => setDropdownOpen(false)}
-                    className="block px-4 py-3 text-gray-700 hover:bg-green-50 text-sm"
-                  >
-                    {t('editProfile')}
+                  <Link to="/edit-profile" onClick={() => setDropdownOpen(false)} className="block px-4 py-3 text-gray-700 hover:bg-green-50 text-sm">
+                  {t('editProfile')}
                   </Link>
                   {userData?.isAdmin && (
                     <Link

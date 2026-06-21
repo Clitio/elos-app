@@ -12,7 +12,7 @@ const ProfessionalDetailsPage = () => {
   const { id } = useParams()
   const { t } = useLanguage()
   const [item, setItem] = useState(null)
-  const [type, setType] = useState(null)
+  const [profileType, setProfileType] = useState(null)
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState(null)
 
@@ -29,7 +29,7 @@ const ProfessionalDetailsPage = () => {
         const profDoc = await getDoc(doc(db, 'professionals', id))
         if (profDoc.exists()) {
           setItem({ id: profDoc.id, ...profDoc.data() })
-          setType('professional')
+          setProfileType('professional')
           setLoading(false)
           return
         }
@@ -37,7 +37,7 @@ const ProfessionalDetailsPage = () => {
         const estDoc = await getDoc(doc(db, 'establishments', id))
         if (estDoc.exists()) {
           setItem({ id: estDoc.id, ...estDoc.data() })
-          setType('establishment')
+          setProfileType('establishment')
           setLoading(false)
           return
         }
@@ -67,12 +67,15 @@ const ProfessionalDetailsPage = () => {
     )
   }
 
+  const whatsappLink = item.whatsapp
+    ? `https://wa.me/${item.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent('Ola! Encontrei o seu perfil no Elos e gostaria de saber mais.')}`
+    : null
+
   return (
     <div>
-      {/* Header com foto */}
       <div
         className="py-16 px-6 text-white relative overflow-hidden"
-        style={{ background: type === 'establishment'
+        style={{ background: profileType === 'establishment'
           ? 'linear-gradient(135deg, #1a3a6b, #0d2b1a)'
           : 'linear-gradient(135deg, #009c3b, #0d2b1a)'
         }}
@@ -92,12 +95,12 @@ const ProfessionalDetailsPage = () => {
             />
             <div>
               <h1 className="text-3xl font-black">{item.name}</h1>
-              <p className="text-green-200 font-semibold mt-1">{item.area || item.type}</p>
+              <p className="text-green-200 font-semibold mt-1">{item.area || item.businessType}</p>
               <p className="text-green-300 text-sm mt-1">📍 {item.location || item.address}</p>
               <span className={`inline-block text-xs px-3 py-1 rounded-full mt-2 font-semibold ${
-                type === 'establishment' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'
+                profileType === 'establishment' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'
               }`}>
-                {type === 'establishment' ? t('establishments') : t('professionals')}
+                {profileType === 'establishment' ? t('establishments') : t('professionals')}
               </span>
             </div>
           </div>
@@ -106,7 +109,6 @@ const ProfessionalDetailsPage = () => {
 
       <div className="max-w-2xl mx-auto px-6 py-12">
 
-        {/* Sobre */}
         <AnimatedSection direction="up">
           <div className="bg-white rounded-3xl shadow-md p-8 mb-6">
             <h2 className="text-lg font-black text-gray-800 mb-3">{t('about_section')}</h2>
@@ -114,8 +116,7 @@ const ProfessionalDetailsPage = () => {
           </div>
         </AnimatedSection>
 
-        {/* Detalhes profissional */}
-        {type === 'professional' && (
+        {profileType === 'professional' && (
           <AnimatedSection direction="up" delay={0.1}>
             <div className="bg-gray-50 rounded-3xl p-6 mb-6">
               <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">{t('yearsInIrelandLabel')}</p>
@@ -124,8 +125,7 @@ const ProfessionalDetailsPage = () => {
           </AnimatedSection>
         )}
 
-        {/* Horarios estabelecimento */}
-        {type === 'establishment' && item.openingHours && (
+        {profileType === 'establishment' && item.openingHours && (
           <AnimatedSection direction="up" delay={0.1}>
             <div className="bg-white rounded-3xl shadow-md p-8 mb-6">
               <h2 className="text-lg font-black text-gray-800 mb-4">{t('openingHours')}</h2>
@@ -137,9 +137,7 @@ const ProfessionalDetailsPage = () => {
                       <div key={day} className="flex justify-between items-center py-2 border-b border-gray-100 last:border-0">
                         <span className="text-gray-500 font-semibold text-sm">{day}</span>
                         <span className={`text-sm font-bold px-3 py-1 rounded-full ${
-                          time === 'fechado'
-                            ? 'bg-red-100 text-red-500'
-                            : 'bg-green-100 text-green-700'
+                          time === 'fechado' ? 'bg-red-100 text-red-500' : 'bg-green-100 text-green-700'
                         }`}>
                           {time === '00:00-00:00' ? '24h' : time}
                         </span>
@@ -154,7 +152,6 @@ const ProfessionalDetailsPage = () => {
           </AnimatedSection>
         )}
 
-        {/* Idiomas */}
         {item.languages && item.languages.length > 0 && (
           <AnimatedSection direction="up" delay={0.2}>
             <div className="bg-white rounded-3xl shadow-md p-8 mb-6">
@@ -174,14 +171,29 @@ const ProfessionalDetailsPage = () => {
         <AnimatedSection direction="up" delay={0.3}>
           <div className="bg-white rounded-3xl shadow-md p-8">
             <h2 className="text-lg font-black text-gray-800 mb-4">{t('contact')}</h2>
+            
             {user ? (
-              <a 
-                href={"mailto:" + item.email}
-                className="block text-center text-white py-4 rounded-2xl font-bold hover:opacity-90 transition shadow-lg"
-                style={{ background: 'linear-gradient(135deg, #009c3b, #0d2b1a)' }}
-              >
-                {t('sendEmail')}
-              </a>
+              <div className="flex flex-col gap-3">
+                <a 
+                  href={"mailto:" + item.email}
+                  className="block text-center text-white py-4 rounded-2xl font-bold hover:opacity-90 transition shadow-lg"
+                  style={{ background: 'linear-gradient(135deg, #009c3b, #0d2b1a)' }}
+                >
+                  📧 {t('sendEmail')}
+                </a>
+                
+                {whatsappLink && (
+                  <a
+                    href={whatsappLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block text-center text-white py-4 rounded-2xl font-bold hover:opacity-90 transition shadow-lg"
+                    style={{ background: 'linear-gradient(135deg, #25D366, #128C7E)' }}
+                  >
+                    💬 {t('contactViaWhatsapp')}
+                  </a>
+                )}
+              </div>
             ) : (
               <div className="text-center">
                 <p className="text-gray-500 text-sm mb-4">{t('needAccountToContact')}</p>

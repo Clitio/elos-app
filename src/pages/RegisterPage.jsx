@@ -133,7 +133,9 @@ const RegisterPage = () => {
         await addDoc(collection(db, 'establishments'), {
           ownerId: user.uid,
           name: establishmentName, email: user.email,
-          photo: photo || null, type: establishmentType, address,
+          photo: photo || null,
+          businessType: establishmentType,
+          address,
           whatsapp: whatsapp || null,
           openingHours: JSON.stringify(openingHours),
           languages, category, description,

@@ -19,6 +19,7 @@ import RegisterPage from './pages/RegisterPage'
 import SuccessPage from './pages/SuccessPage'
 import DashboardPage from './pages/DashboardPage'
 import EditProfilePage from './pages/EditProfilePage'
+import EditUserProfilePage from './pages/EditUserProfilePage'
 import TalkToUsPage from './pages/TalkToUsPage'
 import DirectoryPage from './pages/DirectoryPage'
 import CommunityPage from './pages/CommunityPage'
@@ -64,7 +65,8 @@ const App = () => {
         {/* This structured checks if the user is logged in order to access their page
         JS checks with Firebase if the user is logged. */}
         <Route path="/dashboard" element={<PrivateRoute><DashboardPage /></PrivateRoute>} />
-        <Route path="/edit-profile" element={<PrivateRoute><EditProfilePage /></PrivateRoute>} />
+        <Route path="/edit-profile/:profileType/:profileId" element={<PrivateRoute><EditProfilePage /></PrivateRoute>} />
+        <Route path="/edit-profile" element={<PrivateRoute><EditUserProfilePage /></PrivateRoute>} />
         <Route path="/success" element={<PrivateRoute><SuccessPage /></PrivateRoute>} />
         <Route path="/talk-to-us" element={<PrivateRoute><TalkToUsPage /></PrivateRoute>} />
         <Route path="/admin" element={<PrivateRoute><AdminPage /></PrivateRoute>} />
