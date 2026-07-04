@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { signInWithPopup, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth'
-import { doc, setDoc, addDoc, collection } from 'firebase/firestore'
+import { doc, setDoc, addDoc, collection, getDoc } from 'firebase/firestore'
 import { auth, db, googleProvider } from '../firebase'
 import PhotoUpload from '../components/PhotoUpload'
 import LanguageSelector from '../components/LanguageSelector'
@@ -73,6 +73,12 @@ const RegisterPage = () => {
     })
   }
 
+  const checkIfBanned = async (email) => {
+  const emailKey = email.replace(/\./g, '_').replace(/@/g, '_at_')
+  const bannedDoc = await getDoc(doc(db, 'bannedEmails', emailKey))
+  return bannedDoc.exists()
+}
+
   const handleEmailRegister = async () => {
     if (!name || !email || !password || !confirmPassword) { setError('Por favor preenche todos os campos!'); return }
     if (containsBadWord(name)) { setError('O nome contem palavras inadequadas.'); return }
@@ -90,10 +96,22 @@ const RegisterPage = () => {
       setError('Erro ao criar conta. Este email ja pode estar em uso.')
       console.error(err)
     }
+    const banned = await checkIfBanned(email)
+    if (banned) {
+    setError('Esta conta foi banida. Você não pode criar novos perfis.')
+    return
+}
+
   }
 
   const handleGoogleRegister = async () => {
     try {
+      const banned = await checkIfBanned(result.user.email)
+        if (banned) {
+        setError('Esta conta foi banida. Você não pode criar novos perfis.')
+        await signOut(auth)
+        return
+      }
       const result = await signInWithPopup(auth, googleProvider)
       await saveUserToFirestore(result.user, accountType)
       setError('')

@@ -191,6 +191,15 @@ const translations = {
     addProfileSubtitle: 'perfil(s)',
     selectProfileType: 'Escolha o tipo de perfil',
     saveProfile: 'Salvar Perfil',
+
+    banUser: 'Banir Usuário',
+    unbanUser: 'Desbanir',
+    bannedUsers: 'Usuários Banidos',
+    confirmBan: 'Tem certeza que quer banir este usuário? Ele não poderá criar novas contas com este email.',
+    confirmUnban: 'Tem certeza que quer desbanir este usuário?',
+    userBanned: 'Usuário banido com sucesso.',
+    noBannedUsers: 'Nenhum usuário banido.',
+    banned: 'Banido',
   },
 
   en: {
@@ -385,6 +394,15 @@ const translations = {
     addProfileSubtitle: 'profile(s)',
     selectProfileType: 'Choose profile type',
     saveProfile: 'Save Profile',
+
+    banUser: 'Ban User',
+    unbanUser: 'Unban',
+    bannedUsers: 'Banned Users',
+    confirmBan: 'Are you sure you want to ban this user? They will not be able to create new accounts with this email.',
+    confirmUnban: 'Are you sure you want to unban this user?',
+    userBanned: 'User banned successfully.',
+    noBannedUsers: 'No banned users.',
+    banned: 'Banned',
   }
 }
 
