@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { signInWithPopup, signInWithEmailAndPassword } from 'firebase/auth'
+import { signInWithPopup, signInWithEmailAndPassword, signOut } from 'firebase/auth'
 import { auth, googleProvider } from '../firebase'
 import { useLanguage } from '../context/LanguageContext'
 import AnimatedSection from '../components/AnimatedSection'
+import { doc, getDoc } from 'firebase/firestore'
+import { db } from '../firebase'
 
 const LoginPage = () => {
   const navigate = useNavigate()
@@ -20,29 +22,47 @@ const LoginPage = () => {
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [email, password])
 
-  const handleGoogleLogin = async () => {
-    try {
-      await signInWithPopup(auth, googleProvider)
-      navigate('/dashboard')
-    } catch (err) {
-      setError('Erro ao fazer login com Google. Tenta novamente.')
-      console.error(err)
-    }
-  }
+const checkIfBanned = async (email) => {
+  const emailKey = email.replace(/\./g, '_').replace(/@/g, '_at_')
+  const bannedDoc = await getDoc(doc(db, 'bannedEmails', emailKey))
+  return bannedDoc.exists()
+}
 
-  const handleEmailLogin = async () => {
-    if (!email || !password) {
-      setError('Por favor preenche todos os campos!')
+const handleGoogleLogin = async () => {
+  try {
+    const result = await signInWithPopup(auth, googleProvider)
+    const banned = await checkIfBanned(result.user.email)
+    if (banned) {
+      await signOut(auth)
+      setError('Esta conta foi banida. Entre em contato pelo Fale Conosco se achar que foi um engano.')
       return
     }
-    try {
-      await signInWithEmailAndPassword(auth, email, password)
-      navigate('/dashboard')
-    } catch (err) {
-      setError('Email ou password incorretos.')
-      console.error(err)
-    }
+    navigate('/dashboard')
+  } catch (err) {
+    setError('Erro ao fazer login com Google. Tenta novamente.')
+    console.error(err)
   }
+}
+
+const handleEmailLogin = async () => {
+  if (!email || !password) {
+    setError('Por favor preencha todos os campos!')
+    return
+  }
+  try {
+    const result = await signInWithEmailAndPassword(auth, email, password)
+    const banned = await checkIfBanned(result.user.email)
+    if (banned) {
+      await signOut(auth)
+      setError('Esta conta foi banida. Entre em contato pelo Fale Conosco se achar que foi um engano.')
+      return
+    }
+    navigate('/dashboard')
+  } catch (err) {
+    setError('Email ou senha incorretos.')
+    console.error(err)
+  }
+}
 
   return (
     <div
