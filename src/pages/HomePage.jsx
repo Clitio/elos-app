@@ -116,7 +116,7 @@ const HomePage = () => {
       <section className="min-h-screen flex items-center px-6 md:px-20 py-20 bg-white">
         <div ref={section1Ref} className="max-w-6xl mx-auto w-full grid grid-cols-1 md:grid-cols-2 gap-12 items-center opacity-0">
           <div>
-            <span className="text-sm font-bold text-green-600 uppercase tracking-widest">O que é o Elos</span>
+            <span className="text-sm font-bold text-green-600 uppercase tracking-widest"></span>
             <h2 className="font-black text-gray-900 mt-4 leading-tight" style={{ fontSize: 'clamp(2rem, 6vw, 3.5rem)' }}>
               {t('whyElos')}
             </h2>
@@ -158,13 +158,13 @@ const HomePage = () => {
             </div>
           </div>
           <div className="order-1 md:order-2">
-            <span className="text-sm font-bold uppercase tracking-widest" style={{ color: '#ffdf00' }}>Como funciona</span>
+            <span className="text-sm font-bold uppercase tracking-widest" style={{ color: '#ffdf00' }}></span>
             <h2 className="font-black text-white mt-4 leading-tight" style={{ fontSize: 'clamp(2rem, 6vw, 3.5rem)' }}>
               {t('howItWorks')}
             </h2>
-            <p className="text-gray-400 text-lg mt-6 leading-relaxed">
+            {/* <p className="text-gray-400 text-lg mt-6 leading-relaxed">
               Simples, rápido e em português. Encontre quem você precisa em poucos cliques.
-            </p>
+            </p> */}
           </div>
         </div>
       </section>
@@ -173,7 +173,7 @@ const HomePage = () => {
       <section className="min-h-screen flex items-center px-6 md:px-20 py-20" style={{ background: '#ffdf00' }}>
         <div ref={section3Ref} className="max-w-6xl mx-auto w-full grid grid-cols-1 md:grid-cols-2 gap-12 items-center opacity-0">
           <div>
-            <span className="text-sm font-bold text-green-800 uppercase tracking-widest">A nossa história</span>
+            <span className="text-sm font-bold text-green-800 uppercase tracking-widest"></span>
             <h2 className="font-black text-gray-900 mt-4 leading-tight" style={{ fontSize: 'clamp(2rem, 6vw, 3.5rem)' }}>
               {t('whoCreated')}
             </h2>
@@ -197,7 +197,7 @@ const HomePage = () => {
       {/* SECAO 4 — Categorias */}
       <section ref={section4Ref} className="flex flex-col items-center justify-center px-6 py-20 bg-gray-50">
         <div className="text-center mb-12">
-          <span className="text-sm font-bold text-green-600 uppercase tracking-widest">Serviços</span>
+          <span className="text-sm font-bold text-green-600 uppercase tracking-widest"></span>
           <h2 className="font-black text-gray-900 mt-4" style={{ fontSize: 'clamp(1.8rem, 6vw, 3rem)' }}>
             {t('whatAreYouLookingFor')}
           </h2>

@@ -70,6 +70,24 @@ const AboutPage = () => {
         </AnimatedSection>
 
       </div>
+      {/* FOOTER */}
+            <footer className="py-12 px-6 text-center" style={{ background: '#0d2b1a' }}>
+              <h2 className="text-4xl font-black text-white mb-2">ELOS</h2>
+              <div className="flex justify-center gap-2 mb-6">
+                <div className="h-1 w-12 rounded-full bg-yellow-400"></div>
+                <div className="h-1 w-12 rounded-full bg-white"></div>
+                <div className="h-1 w-12 rounded-full" style={{ backgroundColor: '#169b62' }}></div>
+              </div>
+              <p className="text-yellow-400 font-semibold text-lg mb-2">{t('footer')}</p>
+              <p className="text-gray-500 text-sm mb-8">Cork, Ireland 🇮🇪 × Brazil 🇧🇷</p>
+              <div className="flex flex-wrap justify-center gap-6 text-sm mb-8">
+                <Link to="/about" className="text-gray-400 hover:text-white transition">{t('about')}</Link>
+                <Link to="/directory" className="text-gray-400 hover:text-white transition">{t('directory')}</Link>
+                <Link to="/register" className="text-gray-400 hover:text-white transition">{t('register')}</Link>
+                <Link to="/talk-to-us" className="text-gray-400 hover:text-white transition">{t('talkToUs')}</Link>
+              </div>
+              <p className="text-gray-600 text-xs">© 2025 Elos. Cork, Ireland.</p>
+            </footer>
     </div>
   )
 }
