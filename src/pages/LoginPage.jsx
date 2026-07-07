@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { signInWithPopup, signInWithEmailAndPassword, signOut } from 'firebase/auth'
-import { auth, googleProvider } from '../firebase'
+import { doc, getDoc } from 'firebase/firestore'
+import { auth, googleProvider, db } from '../firebase'
 import { useLanguage } from '../context/LanguageContext'
 import AnimatedSection from '../components/AnimatedSection'
-import { doc, getDoc } from 'firebase/firestore'
-import { db } from '../firebase'
+import ButtonSpinner from '../components/ButtonSpinner'
 
 const LoginPage = () => {
   const navigate = useNavigate()
@@ -13,56 +13,68 @@ const LoginPage = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [loadingEmail, setLoadingEmail] = useState(false)
+  const [loadingGoogle, setLoadingGoogle] = useState(false)
+
+  const checkIfBanned = async (email) => {
+    const emailKey = email.replace(/\./g, '_').replace(/@/g, '_at_')
+    const bannedDoc = await getDoc(doc(db, 'bannedEmails', emailKey))
+    return bannedDoc.exists()
+  }
 
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === 'Enter') handleEmailLogin()
+      if (e.key === 'Enter' && !loadingEmail && !loadingGoogle) handleEmailLogin()
     }
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [email, password])
+  }, [email, password, loadingEmail, loadingGoogle])
 
-const checkIfBanned = async (email) => {
-  const emailKey = email.replace(/\./g, '_').replace(/@/g, '_at_')
-  const bannedDoc = await getDoc(doc(db, 'bannedEmails', emailKey))
-  return bannedDoc.exists()
-}
+  const handleGoogleLogin = async () => {
+    if (loadingGoogle || loadingEmail) return
+    setLoadingGoogle(true)
+    setError('')
+    try {
+      const result = await signInWithPopup(auth, googleProvider)
+      const banned = await checkIfBanned(result.user.email)
+      if (banned) {
+        await signOut(auth)
+        setError('Esta conta foi banida. Entre em contato pelo Fale Conosco se achar que foi um engano.')
+        return
+      }
+      navigate('/dashboard')
+    } catch (err) {
+      setError('Erro ao fazer login com Google. Tente novamente.')
+      console.error(err)
+    } finally {
+      setLoadingGoogle(false)
+    }
+  }
 
-const handleGoogleLogin = async () => {
-  try {
-    const result = await signInWithPopup(auth, googleProvider)
-    const banned = await checkIfBanned(result.user.email)
-    if (banned) {
-      await signOut(auth)
-      setError('Esta conta foi banida. Entre em contato pelo Fale Conosco se achar que foi um engano.')
+  const handleEmailLogin = async () => {
+    if (loadingEmail || loadingGoogle) return
+    if (!email || !password) {
+      setError('Por favor preencha todos os campos!')
       return
     }
-    navigate('/dashboard')
-  } catch (err) {
-    setError('Erro ao fazer login com Google. Tenta novamente.')
-    console.error(err)
-  }
-}
-
-const handleEmailLogin = async () => {
-  if (!email || !password) {
-    setError('Por favor preencha todos os campos!')
-    return
-  }
-  try {
-    const result = await signInWithEmailAndPassword(auth, email, password)
-    const banned = await checkIfBanned(result.user.email)
-    if (banned) {
-      await signOut(auth)
-      setError('Esta conta foi banida. Entre em contato pelo Fale Conosco se achar que foi um engano.')
-      return
+    setLoadingEmail(true)
+    setError('')
+    try {
+      const result = await signInWithEmailAndPassword(auth, email, password)
+      const banned = await checkIfBanned(result.user.email)
+      if (banned) {
+        await signOut(auth)
+        setError('Esta conta foi banida. Entre em contato pelo Fale Conosco se achar que foi um engano.')
+        return
+      }
+      navigate('/dashboard')
+    } catch (err) {
+      setError('Email ou senha incorretos.')
+      console.error(err)
+    } finally {
+      setLoadingEmail(false)
     }
-    navigate('/dashboard')
-  } catch (err) {
-    setError('Email ou senha incorretos.')
-    console.error(err)
   }
-}
 
   return (
     <div
@@ -73,9 +85,11 @@ const handleEmailLogin = async () => {
         <div className="bg-white rounded-3xl shadow-2xl p-8">
 
           <div className="text-center mb-8">
-            <h1 className="text-4xl font-black" style={{ background: 'linear-gradient(135deg, #009c3b, #0d2b1a)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              ELOS
-            </h1>
+            <h1 className="text-4xl font-black" style={{
+              background: 'linear-gradient(135deg, #009c3b, #0d2b1a)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent'
+            }}>ELOS</h1>
             <div className="flex justify-center gap-2 mt-2 mb-4">
               <div className="h-1 w-8 rounded-full bg-yellow-400"></div>
               <div className="h-1 w-8 rounded-full bg-green-600"></div>
@@ -98,7 +112,8 @@ const handleEmailLogin = async () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="email@exemplo.com"
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-green-400 shadow-sm"
+                disabled={loadingEmail || loadingGoogle}
+                className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-green-400 shadow-sm disabled:opacity-50"
               />
             </div>
 
@@ -109,16 +124,18 @@ const handleEmailLogin = async () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••••"
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-green-400 shadow-sm"
+                disabled={loadingEmail || loadingGoogle}
+                className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-green-400 shadow-sm disabled:opacity-50"
               />
             </div>
 
             <button
               onClick={handleEmailLogin}
-              className="w-full text-white py-3 rounded-xl font-bold hover:opacity-90 transition mt-2 shadow-lg"
+              disabled={loadingEmail || loadingGoogle}
+              className="w-full text-white py-3 rounded-xl font-bold hover:opacity-90 transition mt-2 shadow-lg disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center"
               style={{ background: 'linear-gradient(135deg, #009c3b, #0d2b1a)' }}
             >
-              {t('loginButton')}
+              {loadingEmail ? <><ButtonSpinner />{t('loginButton')}...</> : t('loginButton')}
             </button>
 
             <div className="flex items-center gap-3">
@@ -129,10 +146,14 @@ const handleEmailLogin = async () => {
 
             <button
               onClick={handleGoogleLogin}
-              className="w-full flex items-center justify-center gap-3 border border-gray-200 rounded-xl px-4 py-3 hover:bg-gray-50 transition font-semibold text-gray-700 shadow-sm"
+              disabled={loadingEmail || loadingGoogle}
+              className="w-full flex items-center justify-center gap-3 border border-gray-200 rounded-xl px-4 py-3 hover:bg-gray-50 transition font-semibold text-gray-700 shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              <img src="https://www.google.com/favicon.ico" alt="Google" className="w-5 h-5" />
-              {t('loginWithGoogle')}
+              {loadingGoogle ? (
+                <><ButtonSpinner />{t('loginWithGoogle')}...</>
+              ) : (
+                <><img src="https://www.google.com/favicon.ico" alt="Google" className="w-5 h-5" />{t('loginWithGoogle')}</>
+              )}
             </button>
           </div>
 

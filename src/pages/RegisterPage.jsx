@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { signInWithPopup, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth'
+import { signInWithPopup, createUserWithEmailAndPassword, updateProfile, signOut } from 'firebase/auth'
 import { doc, setDoc, addDoc, collection, getDoc } from 'firebase/firestore'
 import { auth, db, googleProvider } from '../firebase'
 import PhotoUpload from '../components/PhotoUpload'
@@ -8,6 +8,7 @@ import LanguageSelector from '../components/LanguageSelector'
 import { containsBadWord } from '../utils/badWords'
 import { useLanguage } from '../context/LanguageContext'
 import AnimatedSection from '../components/AnimatedSection'
+import ButtonSpinner from '../components/ButtonSpinner' // Importação do Spinner padrão
 
 const days = ['Segunda', 'Terca', 'Quarta', 'Quinta', 'Sexta', 'Sabado', 'Domingo']
 const timeSlots = ['fechado', '08:00-17:00', '09:00-18:00', '10:00-19:00', '10:00-22:00', '12:00-22:00', '00:00-00:00']
@@ -35,16 +36,20 @@ const RegisterPage = () => {
   const [openingHours, setOpeningHours] = useState({})
   const [error, setError] = useState('')
 
+  // 🔄 Estado único de carregamento para travar cliques duplos e inputs
+  const [loadingAction, setLoadingAction] = useState(false)
+  const isGlobalLoading = loadingAction
+
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === 'Enter') {
+      if (e.key === 'Enter' && !isGlobalLoading) {
         if (step === 1) handleEmailRegister()
         else if (step === 2) handleCompleteProfile()
       }
     }
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [step, name, email, password, confirmPassword, area, location, languages, description, yearsInIreland, establishmentName, establishmentType, address, openingHours, whatsapp])
+  }, [step, name, email, password, confirmPassword, area, location, languages, description, yearsInIreland, establishmentName, establishmentType, address, openingHours, whatsapp, isGlobalLoading])
 
   const formatName = (value) => {
     const exceptions = ['da', 'de', 'do', 'das', 'dos', 'des', 'e']
@@ -74,60 +79,95 @@ const RegisterPage = () => {
   }
 
   const checkIfBanned = async (email) => {
-  const emailKey = email.replace(/\./g, '_').replace(/@/g, '_at_')
-  const bannedDoc = await getDoc(doc(db, 'bannedEmails', emailKey))
-  return bannedDoc.exists()
-}
+    const emailKey = email.replace(/\./g, '_').replace(/@/g, '_at_')
+    const bannedDoc = await getDoc(doc(db, 'bannedEmails', emailKey))
+    return bannedDoc.exists()
+  }
 
   const handleEmailRegister = async () => {
+    if (isGlobalLoading) return
     if (!name || !email || !password || !confirmPassword) { setError('Por favor preenche todos os campos!'); return }
     if (containsBadWord(name)) { setError('O nome contem palavras inadequadas.'); return }
     if (!validateEmail(email)) { setError('Por favor insere um email valido.'); return }
     if (!validatePassword(password)) { setError('A password deve ter no minimo 10 caracteres, letra maiuscula, minuscula e numero.'); return }
     if (password !== confirmPassword) { setError('As passwords nao coincidem!'); return }
+    
+    setLoadingAction(true)
+    setError('')
+    
     try {
       const result = await createUserWithEmailAndPassword(auth, email, password)
+      
+      const banned = await checkIfBanned(email)
+      if (banned) {
+        setError('Esta conta foi banida. Você não pode criar novos perfis.')
+        await result.user.delete() 
+        await signOut(auth)
+        setLoadingAction(false)
+        return
+      }
+
       await updateProfile(result.user, { displayName: formatName(name) })
       await saveUserToFirestore(result.user, accountType)
-      setError('')
+      
       if (accountType === 'professional' || accountType === 'establishment') setStep(2)
       else navigate('/success')
     } catch (err) {
-      setError('Erro ao criar conta. Este email ja pode estar em uso.')
-      console.error(err)
+      console.error("Erro detalhado no registro:", err)
+      
+      if (err.code === 'auth/email-already-in-use') {
+        setError('Este email já está em uso por outra conta.')
+      } else if (err.code === 'auth/invalid-email') {
+        setError('O formato do email digitado é inválido.')
+      } else if (err.code === 'auth/weak-password') {
+        setError('A senha digitada é muito fraca.')
+      } else {
+        setError('Ocorreu um erro ao criar a conta. Verifique o console ou tente mais tarde.')
+      }
+    } finally {
+      setLoadingAction(false)
     }
-    const banned = await checkIfBanned(email)
-    if (banned) {
-    setError('Esta conta foi banida. Você não pode criar novos perfis.')
-    return
-}
-
   }
 
   const handleGoogleRegister = async () => {
+    if (isGlobalLoading) return
+    setLoadingAction(true)
+    setError('')
     try {
+      const result = await signInWithPopup(auth, googleProvider)
+      
       const banned = await checkIfBanned(result.user.email)
-        if (banned) {
+      if (banned) {
         setError('Esta conta foi banida. Você não pode criar novos perfis.')
+        await result.user.delete()
         await signOut(auth)
+        setLoadingAction(false)
         return
       }
-      const result = await signInWithPopup(auth, googleProvider)
+
       await saveUserToFirestore(result.user, accountType)
-      setError('')
       if (accountType === 'professional' || accountType === 'establishment') setStep(2)
       else navigate('/success')
     } catch (err) {
       setError('Erro ao criar conta com Google. Tenta novamente.')
       console.error(err)
+    } finally {
+      setLoadingAction(false)
     }
   }
 
   const handleCompleteProfile = async () => {
+    if (isGlobalLoading) return
     const user = auth.currentUser
+    setLoadingAction(true)
+    setError('')
 
     if (accountType === 'professional') {
-      if (!area || !location || languages.length === 0 || !description) { setError('Por favor preenche todos os campos!'); return }
+      if (!area || !location || languages.length === 0 || !description) { 
+        setError('Por favor preenche todos os campos!')
+        setLoadingAction(false)
+        return 
+      }
       try {
         await addDoc(collection(db, 'professionals'), {
           ownerId: user.uid,
@@ -142,11 +182,17 @@ const RegisterPage = () => {
       } catch (err) {
         setError('Erro ao guardar perfil. Tenta novamente.')
         console.error(err)
+      } finally {
+        setLoadingAction(false)
       }
     }
 
     if (accountType === 'establishment') {
-      if (!establishmentName || !establishmentType || !address || !description) { setError('Por favor preenche todos os campos!'); return }
+      if (!establishmentName || !establishmentType || !address || !description) { 
+        setError('Por favor preenche todos os campos!')
+        setLoadingAction(false)
+        return 
+      }
       try {
         await addDoc(collection(db, 'establishments'), {
           ownerId: user.uid,
@@ -163,6 +209,8 @@ const RegisterPage = () => {
       } catch (err) {
         setError('Erro ao guardar estabelecimento. Tenta novamente.')
         console.error(err)
+      } finally {
+        setLoadingAction(false)
       }
     }
   }
@@ -177,7 +225,7 @@ const RegisterPage = () => {
     { value: 'daily', label: t('dailyBasis') },
   ]
 
-  const inputClass = "w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-green-400 shadow-sm"
+  const inputClass = "w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-green-400 shadow-sm disabled:opacity-50"
 
   const FormHeader = ({ subtitle }) => (
     <div className="text-center mb-8">
@@ -210,11 +258,11 @@ const RegisterPage = () => {
               </div>
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1">{t('workArea')}</label>
-                <input type="text" value={area} onChange={(e) => setArea(e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1))} placeholder="Ex: Farmaceutica, Medico" className={inputClass} />
+                <input type="text" disabled={isGlobalLoading} value={area} onChange={(e) => setArea(e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1))} placeholder="Ex: Farmaceutica, Medico" className={inputClass} />
               </div>
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1">{t('locationInCork')}</label>
-                <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Ex: Cork City Centre" className={inputClass} />
+                <input type="text" disabled={isGlobalLoading} value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Ex: Cork City Centre" className={inputClass} />
               </div>
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">{t('languagesYouSpeak')}</label>
@@ -222,24 +270,29 @@ const RegisterPage = () => {
               </div>
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1">{t('whatsappNumber')}</label>
-                <input type="text" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} placeholder={t('whatsappPlaceholder')} className={inputClass} />
+                <input type="text" disabled={isGlobalLoading} value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} placeholder={t('whatsappPlaceholder')} className={inputClass} />
               </div>
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1">{t('yearsInIreland')}</label>
-                <input type="number" value={yearsInIreland} onChange={(e) => setYearsInIreland(e.target.value)} placeholder="Ex: 2" min={0} className={inputClass} />
+                <input type="number" disabled={isGlobalLoading} value={yearsInIreland} onChange={(e) => setYearsInIreland(e.target.value)} placeholder="Ex: 2" min={0} className={inputClass} />
               </div>
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1">{t('category')}</label>
-                <select value={category} onChange={(e) => setCategory(e.target.value)} className={inputClass}>
+                <select disabled={isGlobalLoading} value={category} onChange={(e) => setCategory(e.target.value)} className={inputClass}>
                   {categoryOptions.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                 </select>
               </div>
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1">{t('description')}</label>
-                <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="..." rows={4} className={inputClass} />
+                <textarea disabled={isGlobalLoading} value={description} onChange={(e) => setDescription(e.target.value)} placeholder="..." rows={4} className={inputClass} />
               </div>
-              <button onClick={handleCompleteProfile} className="w-full text-white py-4 rounded-2xl font-bold hover:opacity-90 transition shadow-lg mt-2" style={{ background: 'linear-gradient(135deg, #009c3b, #0d2b1a)' }}>
-                {t('completeProfileButton')}
+              <button 
+                onClick={handleCompleteProfile} 
+                disabled={isGlobalLoading}
+                className="w-full text-white py-4 rounded-2xl font-bold hover:opacity-90 transition shadow-lg mt-2 flex items-center justify-center disabled:opacity-60 disabled:cursor-not-allowed" 
+                style={{ background: 'linear-gradient(135deg, #009c3b, #0d2b1a)' }}
+              >
+                {isGlobalLoading ? <><ButtonSpinner />{t('completeProfileButton')}...</> : t('completeProfileButton')}
               </button>
             </div>
           </div>
@@ -263,19 +316,19 @@ const RegisterPage = () => {
               </div>
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1">{t('establishmentName')}</label>
-                <input type="text" value={establishmentName} onChange={(e) => setEstablishmentName(e.target.value)} placeholder="Ex: Restaurante Sabor Brasil" className={inputClass} />
+                <input type="text" disabled={isGlobalLoading} value={establishmentName} onChange={(e) => setEstablishmentName(e.target.value)} placeholder="Ex: Restaurante Sabor Brasil" className={inputClass} />
               </div>
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1">{t('businessType')}</label>
-                <input type="text" value={establishmentType} onChange={(e) => setEstablishmentType(e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1))} placeholder="Ex: Restaurante, Loja" className={inputClass} />
+                <input type="text" disabled={isGlobalLoading} value={establishmentType} onChange={(e) => setEstablishmentType(e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1))} placeholder="Ex: Restaurante, Loja" className={inputClass} />
               </div>
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1">{t('address')}</label>
-                <input type="text" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Ex: 123 Patrick Street, Cork" className={inputClass} />
+                <input type="text" disabled={isGlobalLoading} value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Ex: 123 Patrick Street, Cork" className={inputClass} />
               </div>
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1">{t('whatsappNumber')}</label>
-                <input type="text" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} placeholder={t('whatsappPlaceholder')} className={inputClass} />
+                <input type="text" disabled={isGlobalLoading} value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} placeholder={t('whatsappPlaceholder')} className={inputClass} />
               </div>
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">{t('openingHours')}</label>
@@ -283,7 +336,7 @@ const RegisterPage = () => {
                   {days.map((day) => (
                     <div key={day} className="flex items-center gap-2">
                       <span className="text-sm text-gray-600 w-20">{day}</span>
-                      <select onChange={(e) => handleHoursChange(day, e.target.value)} className="flex-1 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-green-400 shadow-sm">
+                      <select disabled={isGlobalLoading} onChange={(e) => handleHoursChange(day, e.target.value)} className="flex-1 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-green-400 shadow-sm disabled:opacity-50">
                         {timeSlots.map((slot) => (
                           <option key={slot} value={slot}>{slot === 'fechado' ? 'Fechado' : slot === '00:00-00:00' ? '24 horas' : slot}</option>
                         ))}
@@ -298,16 +351,21 @@ const RegisterPage = () => {
               </div>
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1">{t('category')}</label>
-                <select value={category} onChange={(e) => setCategory(e.target.value)} className={inputClass}>
+                <select disabled={isGlobalLoading} value={category} onChange={(e) => setCategory(e.target.value)} className={inputClass}>
                   {categoryOptions.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                 </select>
               </div>
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1">{t('description')}</label>
-                <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="..." rows={4} className={inputClass} />
+                <textarea disabled={isGlobalLoading} value={description} onChange={(e) => setDescription(e.target.value)} placeholder="..." rows={4} className={inputClass} />
               </div>
-              <button onClick={handleCompleteProfile} className="w-full text-white py-4 rounded-2xl font-bold hover:opacity-90 transition shadow-lg mt-2" style={{ background: 'linear-gradient(135deg, #1a3a6b, #0d2b1a)' }}>
-                {t('registerEstablishmentButton')}
+              <button 
+                onClick={handleCompleteProfile} 
+                disabled={isGlobalLoading}
+                className="w-full text-white py-4 rounded-2xl font-bold hover:opacity-90 transition shadow-lg mt-2 flex items-center justify-center disabled:opacity-60 disabled:cursor-not-allowed" 
+                style={{ background: 'linear-gradient(135deg, #1a3a6b, #0d2b1a)' }}
+              >
+                {isGlobalLoading ? <><ButtonSpinner />{t('registerEstablishmentButton')}...</> : t('registerEstablishmentButton')}
               </button>
             </div>
           </div>
@@ -327,7 +385,7 @@ const RegisterPage = () => {
           <div className="flex flex-col gap-4">
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1">{t('accountType')}</label>
-              <select value={accountType} onChange={(e) => setAccountType(e.target.value)} className={inputClass}>
+              <select disabled={isGlobalLoading} value={accountType} onChange={(e) => setAccountType(e.target.value)} className={inputClass}>
                 <option value="user">{t('userType')}</option>
                 <option value="professional">{t('professionalType')}</option>
                 <option value="establishment">{t('establishmentType')}</option>
@@ -346,32 +404,47 @@ const RegisterPage = () => {
 
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1">{t('fullName')}</label>
-              <input type="text" value={name} onChange={(e) => setName(formatName(e.target.value))} placeholder="O teu nome" className={inputClass} />
+              <input type="text" disabled={isGlobalLoading} value={name} onChange={(e) => setName(formatName(e.target.value))} placeholder="O teu nome" className={inputClass} />
             </div>
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1">{t('emailLabel')}</label>
-              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="email@exemplo.com" className={inputClass} />
+              <input type="email" disabled={isGlobalLoading} value={email} onChange={(e) => setEmail(e.target.value)} placeholder="email@exemplo.com" className={inputClass} />
             </div>
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1">{t('passwordLabel')}</label>
-              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••••" className={inputClass} />
+              <input type="password" disabled={isGlobalLoading} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••••" className={inputClass} />
               <p className="text-xs text-gray-400 mt-1">{t('passwordHint')}</p>
             </div>
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1">{t('confirmPassword')}</label>
-              <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="••••••••••" className={inputClass} />
+              <input type="password" disabled={isGlobalLoading} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="••••••••••" className={inputClass} />
             </div>
-            <button onClick={handleEmailRegister} className="w-full text-white py-4 rounded-2xl font-bold hover:opacity-90 transition shadow-lg" style={{ background: 'linear-gradient(135deg, #009c3b, #0d2b1a)' }}>
-              {t('createAccount')}
+            
+            <button 
+              onClick={handleEmailRegister} 
+              disabled={isGlobalLoading}
+              className="w-full text-white py-4 rounded-2xl font-bold hover:opacity-90 transition shadow-lg flex items-center justify-center disabled:opacity-60 disabled:cursor-not-allowed" 
+              style={{ background: 'linear-gradient(135deg, #009c3b, #0d2b1a)' }}
+            >
+              {isGlobalLoading ? <><ButtonSpinner />{t('createAccount')}...</> : t('createAccount')}
             </button>
+            
             <div className="flex items-center gap-3">
               <div className="flex-1 h-px bg-gray-200"></div>
               <span className="text-gray-400 text-sm">ou</span>
               <div className="flex-1 h-px bg-gray-200"></div>
             </div>
-            <button onClick={handleGoogleRegister} className="w-full flex items-center justify-center gap-3 border border-gray-200 rounded-2xl px-4 py-3 hover:bg-gray-50 transition font-semibold text-gray-700 shadow-sm">
-              <img src="https://www.google.com/favicon.ico" alt="Google" className="w-5 h-5" />
-              {t('registerWithGoogle')}
+            
+            <button 
+              onClick={handleGoogleRegister} 
+              disabled={isGlobalLoading}
+              className="w-full flex items-center justify-center gap-3 border border-gray-200 rounded-2xl px-4 py-3 hover:bg-gray-50 transition font-semibold text-gray-700 shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {isGlobalLoading ? (
+                <><ButtonSpinner />{t('registerWithGoogle')}...</>
+              ) : (
+                <><img src="https://www.google.com/favicon.ico" alt="Google" className="w-5 h-5" />{t('registerWithGoogle')}</>
+              )}
             </button>
           </div>
           <p className="text-center text-gray-500 text-sm mt-6">
